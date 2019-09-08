@@ -1,0 +1,67 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<div class="tituloPag">Caixas</div>
+
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(isset($this->paginator) &&count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 900px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 100px">Código</th>
+            <th class="rounded-company" style="width: 200px">Usuário</th>
+            <th class="rounded-company" style="width: 200px">Descrição</th>
+            <th class="rounded-company" style="width: 200px">Localização</th>
+            <th class="rounded-company" style="width: 200px">Montante</th>
+            <th class="rounded-company" style="width: 300px">Ações</th>
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key):?>
+        <tr>
+            <td class="listar-simples"><?php echo $key['id_caixa']; ?></td>
+            <td class="listar-simples"><?php echo $key['login']; ?></td>
+            <td class="listar-simples"><?php echo $key['Caixa']; ?></td>
+            <td class="listar-simples"><?php echo $key['localizacao']; ?></td>
+            <td class="listar-simples">R$ <?php printf("%.2f",$key['total']); ?></td>
+            <td class="listar-simples">
+            <a href="<?php echo $this->url(array('action'=>'receitacaixa','controller'=>'Relatorios','filtro'=>"CAIXA=".$key['id_caixa']." and VENDEDOR=".$key['id_vendedor']),null,1); ?>">Fechar</a>
+            </td>
+        </tr>
+        <?php endforeach;?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php  }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+if(isset($this->paginator))
+	echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+
+}?>

@@ -1,0 +1,64 @@
+<?php 
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+if($auth->hasIdentity() && $login->nivel != 1)
+	{
+    ?><div id="header"><?php 
+    }
+else
+    {
+    ?><div id="header3"><?php 
+    }
+      if($auth->hasIdentity()){
+      	?>
+     
+   	<div id="menu">
+        	<a href="<?php 
+        		$id = $this->id_barraca;
+        		$nome= $this->nome; 
+        		echo $this->url(array('action'=>'meusprodutos','controller'=>'Produtos','id_barraca' => $id)); ?>"">
+                <div class="opcaoMenu">
+                 Vender
+                </div>
+            </a>
+            
+        	<a href="<?php
+        		echo $this->url(array('action'=>'vendasbarraca','controller'=>'relatorios','id_barraca' => $id)); ?>"">
+                <div class="opcaoMenu">
+                 Relat&oacute;rio de Vendas
+                </div>
+            </a>
+            <a href="<?php echo $this->url(array('action'=>'minhasbarracas','controller'=>'barraca'),null,1); ?>"">
+                <div class="opcaoMenu">
+                 Minhas Barracas
+                </div>
+            </a>
+         
+            
+          
+  
+            
+            
+      </div>
+      <?php }?>
+   
+    <?php   
+    
+  
+      if($auth->hasIdentity()&& $login->nivel != 1){
+      	
+       
+		?>
+		
+      <div id="usuario_logado">
+     
+       <?php 
+         
+     // print_r($login);
+      
+      echo $login->login;
+      ?> | <a href="<?php echo $this->url(array('action'=>'sair','controller'=>'vendedor'),null,1); ?>"> Sair do sistema</a></div>
+     
+	</div>
+	
+	<?php }?>

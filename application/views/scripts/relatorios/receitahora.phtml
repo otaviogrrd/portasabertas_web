@@ -1,0 +1,86 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<div class="tituloPag">Relatorios</div>
+<br>
+<br>
+<form action="<?php $this->url(array('action'=>'receitacaixa','controller'=>'relatorios')) ?>" method="get">
+Pesquisar Receita: <input type="text" name="filtro" title="Voce pode pesquisar por cartao(CARTAO=1001), por caixa(CAIXA=1) ou por operador(VENDEDOR=10). Pode usar AND OR LIKE para combinar ">  
+
+
+<input type="submit" value="Buscar">
+ 
+
+</form>
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(isset($this->paginator)){
+    
+    ?>
+<table style="width: 800px;border: solid 1px #ccc ;">
+    
+        <tr>
+        	<th class="rounded-company" style="width: 150px">Horário</th>
+            <th class="rounded-company" style="width: 250px">Forma de Pagamento</th>
+            <th class="rounded-company" style="width: 150px">Qtd</th>
+            <th class="rounded-company" style="width: 150px">Valor</th>
+       
+        </tr>
+    
+    <tbody>
+   
+        <?php
+        	$tg=0;
+        	$ultimo_caixa="";
+        	foreach($this->paginator as $key){ ?>
+        <tr><?php if ($key['hora'] != $ultimo_caixa){
+        				$ultimo_caixa= $key['hora'];
+        				$caixa_count=0;?>
+        				<td class="listar-simples"><?php echo substr("0".$key['hora'].":00",-5); ?></td>
+        	<?php 		}
+        			else{
+        				$caixa_count++;?>
+        				<td>&nbsp;</td>
+        	<?php 		}?>
+            <td class="listar-simples"><?php echo $key['Forma']; ?></td>
+            <td class="listar-simples"><?php echo $key['qtd']; ?></td>
+            <td class="listar-simples">R$ <?php printf("%.2f",$key['total']); ?></td>
+		</tr>
+        	
+        <?php
+        	$tg += $key['total']; 
+    		} ?>
+       		
+       		<tr>
+       		<td class="listar">&nbsp;</td>
+            <td class="listar">&nbsp;</td>
+            <td class="listar">TOTAL GERAL</td>
+            <td class="listar">R$ <?php printf("%.2f",$tg); ?></td>
+            </tr>
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "Nenhum registro encontrado";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(isset($this->paginator)){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+    }}?>

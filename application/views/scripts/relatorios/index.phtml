@@ -1,0 +1,149 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<div class="tituloPag">Relatorios</div>
+
+<br>
+<table class='table'>
+    
+        <tr>
+            <th class="rounded-company" style="width: 300px">Descrição</th>
+            <th class="rounded-company" style="width: 600px">Tipo</th>
+        </tr>
+    
+    <tbody>
+            <tr>
+            <td class="listar-simples" style="height:40px"><strong>Todas as Transações (Saidas)</strong></td>
+            <td class="listar-simples" style="text-align:left">
+            	<a href="<?php echo $this->url(array('action'=>'transacoes','controller'=>'relatorios','filtro'=>''),null,1); ?>">Detalhado</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            	<a href="<?php echo $this->url(array('action'=>'transacoesbarraca','controller'=>'relatorios','filtro'=>''),null,1); ?>">por barraca</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            	<a href="<?php echo $this->url(array('action'=>'transacoeshora','controller'=>'relatorios','filtro'=>''),null,1); ?>">por hora</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="listar-simples" style="height:40px"><strong>Toda a Receita (Entradas)</strong></td>
+            <td class="listar-simples" style="text-align:left">
+            	<a href="<?php echo $this->url(array('action'=>'receita','controller'=>'relatorios','filtro'=>''),null,1); ?>">Detalhado</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            	<a href="<?php echo $this->url(array('action'=>'receitacaixa','controller'=>'relatorios','filtro'=>''),null,1); ?>" >por caixa</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            	<a href="<?php echo $this->url(array('action'=>'receitamoeda','controller'=>'relatorios','filtro'=>''),null,1); ?>" >por moeda</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            	<a href="<?php echo $this->url(array('action'=>'receitahora','controller'=>'relatorios','filtro'=>''),null,1); ?>" >por hora</a>
+            </td>
+        </tr>
+    </tbody>
+
+  
+</table>
+
+
+
+<style>
+    .table{
+        width: 900px;
+    }
+    .table>td{
+        border: solid 1px #ccc collapse;
+    }
+    .par{
+        background-color: lightgray;
+    }
+    .impar{
+        background-color: gray;
+    }
+</style>
+<table class='table'>
+    <tr>
+        <th colspan=2 class='par'>Data</th>
+        <th colspan=3 class='impar'>Transações</th>
+        <th colspan=5 class='par'>Receita</th>
+    </tr>
+    <tr>
+        <th colspan=2 class='par'></th>
+        <th class='impar'>Barraca</th>
+        <th class='impar'>Hora</th>
+        <th class='impar'>Total</th>
+        <th class='par'>Caixa</th>
+        <th class='par'>Moeda</th>
+        <th class='par'>Hora</th>
+        <th class='par'>Total</th>
+    </tr>
+<?php 
+if (is_array($this->dados) && count($this->dados)>0){
+    foreach ($this->dados as $key => $value) {
+        echo "<tr>";
+        echo "<td colspan=2 class='par'>" . $key . "</td>";
+        if (isset($value['saidas'])){
+            echo "<td class='impar'><a href='" . $this->url(
+                array(
+                    'action'=>'transacoesbarraca',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['saidas'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+            echo "<td class='impar'><a href='" . $this->url(
+                array(
+                    'action'=>'transacoeshora',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['saidas'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+            echo "<td class='impar'><a href='" . $this->url(
+                array(
+                    'action'=>'transacoes',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['saidas'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+        }else{
+            echo "<td colspan=3 class='impar'> - </td>";
+        }
+
+        if (isset($value['creditos'])){
+            echo "<td class='par'><a href='" . $this->url(
+                array(
+                    'action'=>'receitacaixa',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['creditos'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+            echo "<td class='par'><a href='" . $this->url(
+                array(
+                    'action'=>'receitamoeda',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['creditos'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+            echo "<td class='par'><a href='" . $this->url(
+                array(
+                    'action'=>'receitahora',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['creditos'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+            echo "<td class='par'><a href='" . $this->url(
+                array(
+                    'action'=>'receita',
+                    'controller'=>'relatorios',
+                    'filtro'=>'DIA="' . $value['creditos'] . '"'
+                ),
+                null,
+                1) . "'>Ver</a></td>";
+        }else{
+            echo "<td colspan=3 class='par'> - </td>";
+        }
+
+        echo "</tr>";
+    }
+
+}
+?>
+</table>
+
+<?php }?>

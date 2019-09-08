@@ -1,0 +1,135 @@
+<?php 
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,3,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
+	$this->headScript()
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript');
+		
+	$this->headLink()
+		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
+	
+		
+	$this->headScript()->captureStart();
+?>
+
+ <div class="tituloPag"><?php echo $this->barraca." - VENDAS"; ?></div>
+
+<!--<a class="listar" href="<?php echo $this->url(array('action'=>'new','controller'=>'Barraca'),null,1); ?>"> Incluir</a>
+-->
+<br>
+<br>
+<form action="<?php $this->url(array("controller"=>"cartao","action"=>"index")) ?>" method="get">
+<h1>Pesquisar pelo código do cartão:</h1><input id="busca" type="text" name="busca" class="buscar" value="<?php echo (isset($_GET['id_cartao'])?$_GET['id_cartao']:'')?>">
+<script>
+baseUrl = "<?php echo $this->baseUrl(); ?>";
+$(function () {
+    $('form').submit(function(){
+        $("#busca").trigger('change');
+        return false;
+    })
+	$("#busca").focus();
+	$("#busca").change(function () {
+		var id = $(this).val();
+		if (id.length > 8){
+			id = id.substr(id.length - 9,8);
+			window.location.href = baseUrl + '/relatorios/vendasbarraca/id_barracas/'+ <?php echo ($this->id_barraca) ? $this->id_barraca : 0 ?> + '/id_cartao/' + id;
+		};
+
+        if (id.match(/\-\d+/)){
+            window.location.href = baseUrl + '/relatorios/vendasbarraca/id_barracas/0/id_cartao/' + id;
+        }
+	});
+	setInterval(function() {
+		var id = $("#busca").val();
+		if (id.length > 8){
+			$("#busca").trigger('change');
+			}
+		}, 1500);
+});	
+</script>
+
+<div class="clearfix"></div>
+
+<div id="resultado_pesquisa">
+<br>
+ <?php
+ if(isset($this->paginator) && count($this->paginator) > 0 ){
+	$auth = Zend_Auth::getInstance ();
+	$login = $auth->getIdentity();
+    
+    ?>
+<table style="width: 950px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 300px">Data</th>
+            <th class="rounded-company" style="width: 100px">Cart&atilde;o</th>
+            <th class="rounded-company" style="width: 300px">Portador</th>
+            <th class="rounded-company" style="width: 300px">Produto</th>
+            <th class="rounded-company" style="width: 50px">Qtd</th>
+            <th class="rounded-company" style="width: 190px">Valor</th>
+            <th class="rounded-company" style="width: 250px">Operador</th>
+            <th class="rounded-company" style="width: 100px">Status</th>
+            <?php if($login->nivel == 1){?>
+            <th class="rounded-company" style="width: 100px">A&ccedil;&atilde;o</th>
+            <?php }?>       
+        </tr>
+    
+    <tbody>
+   
+        <?php 
+
+        foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar-simples"><?php echo $key['dthr']; ?></td>
+            <td class="listar-simples">
+            <?php if($key['id_cartao']>0){ ?>
+                <img src='/Produtos/bar/id/<?php echo $key['id_cartao']?>'></img>
+            <?php }else{
+                echo 'Venda direta no caixa';
+                } ?>
+            </td>
+            <td class="listar-simples"><?php echo $key['portador']; ?></td>
+            <td class="listar-simples"><?php echo $key['descricao']; ?></td>
+            <td class="listar-simples"><?php echo $key['qtd']; ?></td>
+            <td class="listar-simples">R$ <?php printf("%.2f",$key['total']); ?></td>
+            <td class="listar-simples"><?php echo $key['login']; ?></td>
+            <td class="listar-simples"><?php echo ($key['status']==0?'CANC':'OK'); ?></td>
+            <?php if($login->nivel == 1 || $login->nivel == 4){?>
+            <td class="listar-simples">
+            <?php 	echo '<a href="' . $this->url(array('action'=>'estorno','controller'=>'Vendas','id_venda'=>$key['id_venda'],'id_barraca'=>$key['barraca'], 'id_cartao'=>$key['id_cartao']),null,1); 
+					$msg="'".$key['id_cartao']."','".$key['portador']."','".$key['descricao']."','".$key['valor']."'";
+            echo ($key['status']==1?'"onclick="return confirma_estorno_venda('.$msg.', this)"> Cancelar':'">')."</a>";?>
+            </td>
+  			<?php }?>       
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+
+<?php }
+else {
+	
+	echo "<h2>Nenhum registro encontrado</h2>";
+	
+}
+   ?>
+</div>
+<br>
+
+ <?php
+ if(isset($this->paginator)){
+	echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+ 	}
+}
+	?>
+
+  
+
+    

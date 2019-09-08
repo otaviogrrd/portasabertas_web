@@ -1,0 +1,74 @@
+
+ <?php
+
+    
+    
+$this->headLink()
+    ->appendStylesheet($this->baseUrl() . '/js/jquery-ui.min.css');
+
+ ?>
+ <div class="tituloPag">Preços</div>
+<script>
+    var brToUs = function(x){
+        return Number(x.replace(/\D*(\d*)\.?(\d+)\,?(\d+)/, '$1$2\.$3'))
+    }
+    var usToBr = function(x){
+        return "R$" + String(x.replace(/\D*(\d*)(\,?)(\d+)\.?(\d+)/, '$1$2$3\,$4'))
+    }
+    var calcularTotal = function(){
+        var total = 0;
+        $('.total').each(function(index, element){
+            total = total + brToUs($(element).html());
+        })
+        $('#total').html(usToBr(String(total.toFixed(2))));
+    }
+    $(function() {
+        $(':input[type="number"]').change(function(){
+            var valor = brToUs($(this).parent().parent().find('td:nth-child(2)').html());
+            var qtd = $(this).val();
+            var total = Number(valor * qtd).toFixed(2);
+            $(this).parent().parent().find('td:nth-child(4)').html(usToBr(total));
+            calcularTotal();
+        });
+    });
+</script>
+<table>
+<thead>
+    <tr>
+        <th>Produto</th>
+        <th>Valor Unitário</th>
+        <th>Quantidade</th>
+        <th>Total</th>
+    </tr>
+</thead>
+<tbody>
+<?php
+
+ if (is_array($this->produtos)){
+    foreach ($this->produtos as $key => $value) {
+        echo "\t<tr>\n";
+        echo "\t\t<td>{$value['descricao']}</td>\n";
+        echo "\t\t<td>" . $this->currency($value['valor']) . "</td>\n";
+        echo "\t\t<td><input type=\"number\" value='0' min='0'/></td>";
+        echo "\t\t<td class='total'>R$0,00    </td>\n";
+        echo "\t</tr>\n";
+    }
+}
+
+?>
+
+</tbody>
+</table>
+<style>
+    #totalContainer{
+        position: fixed;
+        top: 30%;
+        right: 0px;
+        border: 3px solid black;
+        background: orange;
+        font-size: 2.5em;
+    }
+</style>
+<div id='totalContainer'>
+    Total: <div id='total'>R$0,00</div>
+</div>

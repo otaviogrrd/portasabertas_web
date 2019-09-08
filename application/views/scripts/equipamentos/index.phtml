@@ -1,0 +1,114 @@
+<?php
+
+$barracas = array('0'=>'Nenhum');
+foreach ($this->barracas as $key => $value) 
+    $barracas[$key]=$value;
+$this->barracas = $barracas;
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<div class="tituloPag">Equipamentos Barraca</div>
+
+<a class="listar" href="<?php echo $this->url(array('action'=>'new','controller'=>'Equipamentos'),null,1); ?>"> Incluir</a>
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 950px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 300px">Barraca</th>
+            <th class="rounded-company" style="width: 300px">Responsavel</th>
+            <th class="rounded-company" style="width: 150px">IP</th>
+            <th class="rounded-company" style="width: 150px">Hash</th>
+            <th class="rounded-company" style="width: 300px">Modelo</th>
+            <th class="rounded-company" style="width: 300px">Status</th>
+            <th class="rounded-company" style="width: 350px">A&ccedil;&otilde;es</th>
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key){ 
+            ?>
+        <tr>
+            <td class="listar-simples"><?php echo new Zend_Form_Element_Select('barraca', array('multiOptions'=>$this->barracas, 'data-equipamento'=>$key['id_equipamento'], 'class'=>'input-m', 'value'=>$key['id_barraca'])); ?></td>
+            <td class="listar-simples"><?php echo $this->vendedor($key['responsavel']); ?></td>
+            <td class="listar-simples"><?php echo $key['ip']; ?></td>
+            <td class="listar-simples" title='<?php echo $key['mac']; ?>'><?php echo substr($key['mac'],0,5) . '...' ?></td>
+            <td class="listar-simples" title='<?php echo $key['descricao']?>'><?php echo substr($key['descricao'],0,5) . '...'; ?></td>
+            <td class="listar-simples"><span id='status-<?php echo $key['id_equipamento']?>'><?php echo ($key['st_validado'])?'Ativado':'Desativado' ?></span></td>
+            <td class="listar-simples"><a href="<?php echo $this->url(array('action'=>'edit','controller'=>'Equipamentos','id_equipamento'=>$key['id_equipamento']),null,1); ?>">Editar</a>
+             | <a href="<?php echo $this->url(array('action'=>'delete','controller'=>'Equipamentos','id_equipamento'=>$key['id_equipamento']),null,1); ?>">Deletar</a>
+             | <a href="#" class='ativacao' data-id='<?php echo $key['id_equipamento']?>'><?php echo ($key['st_validado'])?'Desativar':'Ativar' ?></a>
+             </td> 
+        </tr>
+        <?php } ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum Equipamento para Barraca cadastrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(isset($this->paginator)){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+
+ }}?>
+
+ <script>
+
+$('select').change(function(){
+    var clicked = $(this);
+    $.ajax({
+        url: '<?php echo $this->url(array('action'=>'escolher-barraca'))?>/barraca/' + $(this).data('equipamento')+'/id/'+clicked.val(),
+        success: function(msg, e, t, x){
+            msg = eval(msg);
+            alert(msg.msg);
+        }
+    })
+});
+
+$('.ativacao').click(function(){
+    var clicked = $(this);
+    $.ajax({
+        url: '<?php echo $this->url(array('action'=>'ativacao'))?>/id/' + $(this).data('id'),
+        success: function(msg, e, t, x){
+            msg = eval(msg);
+
+            if (msg.status == 1){
+                if (clicked.html() == 'Desativar'){
+                    clicked.html('Ativar');
+                    $('#status-'+clicked.data('id')).html('Desativado');
+                }else{
+                    if (clicked.html() == 'Ativar'){
+                        $('#status-'+clicked.data('id')).html('Ativado');
+                        clicked.html('Desativar');
+                    }
+                }
+            }
+        }
+    })
+});
+ </script>

@@ -1,0 +1,70 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<div class="tituloPag">Caixas</div>
+
+<a class="listar" href="<?php echo $this->url(array('action'=>'new','controller'=>'Caixas'),null,1); ?>"> Incluir</a>
+&nbsp;
+<?php if ($login->nivel ==1){?>
+	&nbsp;|&nbsp;
+	<a class="listar" href="<?php echo $this->url(array('action'=>'receitacaixausuario','controller'=>'Relatorios'),null,1); ?>"> Fechar</a>
+<?php }?>
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(isset($this->paginator) &&count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 900px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 100px">Código</th>
+            <th class="rounded-company" style="width: 200px">Descrição</th>
+            <th class="rounded-company" style="width: 200px">Localização</th>
+            <th class="rounded-company" style="width: 200px">Endereço ip</th>
+            <th class="rounded-company" style="width: 300px">Ações</th>
+        </tr> 
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar-simples"><?php echo $key['id_caixa']; ?></td>
+            <td class="listar-simples"><?php echo $key['descricao']; ?></td>
+            <td class="listar-simples"><?php echo $key['localizacao']; ?></td>
+            <td class="listar-simples"><?php echo $key['ip']; ?></td>
+            <td class="listar-simples"><a href="<?php echo $this->url(array('action'=>'edit','controller'=>'Caixas','id_caixas'=>$key['id_caixa']),null,1); ?>">Editar</a>
+             | <a href="<?php echo $this->url(array('action'=>'delete','controller'=>'Caixas','id_caixas'=>$key['id_caixa']),null,1); ?>">Deletar</a></td>
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+if(isset($this->paginator))
+	echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+
+}?>

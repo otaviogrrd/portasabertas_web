@@ -1,0 +1,278 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color:#EEEFF1;
+	background-repeat: repeat-x;
+	background-image: url(../img/fnd_topo_01.jpg);
+}
+
+#conteudo_cima{
+	background-image: url("../img/content_topo.png");
+    height: 12px;
+    margin:30px auto 0 auto;
+    position: relative;
+    width: 1024px;
+    }
+#conteudo_centro{
+	background-image: url("../img/content_centro.png");
+    margin:0px auto 0 auto;
+    position: relative;
+	width: 1024px;
+    }
+	
+#conteudo_baixo{
+	height: 12px;
+    margin:0px auto 0 auto;
+    position: relative;
+    width: 1024px;
+    }
+
+
+#clearfix{
+	
+	clear: both;
+	
+}
+
+#conteudo{
+	padding:20px;
+	min-height:400px
+	
+}
+
+body,td,th {
+	color: #242748;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 12px;
+}
+td{
+	text-align:center;
+	
+}
+
+#header {
+	height:45px;
+	width:auto;
+}
+#logo {
+	margin-top:5px;
+	margin-right:10px;
+	float:right;
+	background-image:url(../img/jpa2017.jpeg);
+	background-repeat:no-repeat;
+	height:400px;
+	width:450px;
+	float:right;
+}
+#menu {
+	float:left;
+	width:auto;
+}
+#menu1 {
+	float:left;
+	width:auto;
+}
+#menu2 {
+	float:left;
+	width:auto;
+}
+#menu3 {
+	float:left;
+	width:auto;
+}
+.opcaoMenu {
+	
+	margin: 1px 1px;
+	float:left;
+	width:135px; 
+	background-color:#e78347;
+	color:#fff;
+	padding-top: 8px;
+	text-align:center;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-weight:bolder;
+	font-size:17px;
+	height:60px;
+}
+
+.opcaoMenu:hover{
+	
+	background-color:#cd631d;
+	
+}
+
+#usuario_logado {
+	margin-top:5px;
+	margin-right:10px;
+	float:right;
+	color:#555;
+	font-size:14px;
+	font-weight:bolder;
+}
+.tituloPag {
+	margin-top:-10px;
+	margin-right:15px;
+	font-size:30px;
+	font-weight:bolder;
+	text-transform:uppercase;
+	color:#E0E2E9;
+	float:right;
+}
+a:link {
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: none;
+}
+a:active {
+	text-decoration: none;
+}
+.separaLinhas {
+	margin-top:3px;
+	float:left;
+	min-width:600px;
+}
+
+td,tr {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border:#e7e8e9 1px solid;
+	padding:4px;
+}
+
+td:hover,tr:hover {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border:#e7e8e9 1px solid;
+	padding:4px;
+	background-color:#fdeacc;
+}
+
+span.vl_total {
+	font: bold 20px Verdana; color:#000099;
+	
+}
+span.vl_total_negativo {
+	font: bold 20px Verdana; color:#FF0000;
+	
+}
+
+.buscar {
+	font: bold 24px Verdana; color:#000099;
+}
+.vender,.rounded-company {
+	font: bold 18px Verdana; color:#000000;
+}
+.listar {
+	font: bold 16px Verdana; color:#000000;
+}
+.listar-simples,.optional,.required {
+	font: 16px Verdana; color:#000000;
+}
+.listar-total {
+	font: bold 16px Verdana; color:#000000;
+	background-color:#fdeacc;
+}
+.qtd{
+	font: bold 17px Verdana; color:#000000;
+}
+
+.input-m, .input-pp{
+	font: bold 20px Verdana; color:#000000;
+}
+
+span#nome, span#creditos {
+	font: bold 24px Verdana; color:#000099;
+	margin-left: 5px;
+}
+
+
+#container-portador, #container-busca {
+	float:left;
+	display: block;
+}
+#container-busca {
+	width: 100px;
+}
+#container-portador {
+	width: 500px;
+	display: block;
+	overflow: hidden;
+	float:left;
+}
+#container {
+	clear: both;
+	margin-bottom: 10px;
+	display: block;
+	overflow: hidden;
+}
+	
+div.span-portador {
+	float:right;
+	width: 400px;
+	display:block;
+	overflow: hidden;
+}
+div.span-creditos {
+	float:left;
+	width: 100px;
+	display:block;
+	overflow: hidden;
+}
+
+div#container {
+	background: #d5d5d5;
+	padding: 5px;
+}
+
+.alert-box {
+	color:#555;
+	border-radius:10px;
+	font-family:Tahoma,Geneva,Arial,sans-serif;font-size:2em;
+	padding:10px 36px;
+	margin:10px;
+}
+.alert-box span {
+	font-weight:bold;
+	text-transform:uppercase;
+}
+.error {
+	background:#ffecec url('/img/error.png') no-repeat 10px 50%;
+	border:1px solid #f5aca6;
+}
+.success {
+	background:#e9ffd9 url('/img/success.png') no-repeat 10px 50%;
+	border:1px solid #a6ca8a;
+}
+.warning {
+	background:#fff8c4 url('/img/warning.png') no-repeat 10px 50%;
+	border:1px solid #f2c779;
+}
+.notice {
+	background:#e3f7fc url('/img/notice.png') no-repeat 10px 50%;
+	border:1px solid #8ed9f6;
+}
+
+.atalho{
+	font-size: .7em;
+}
+.downloads>ul{
+	list-style-type: none;
+	border: 1px solid black;
+	background-color: lightgray;
+	padding-left: 0px;
+}
+.downloads{
+
+}
+.vender:disabled{
+	color: gray;
+}

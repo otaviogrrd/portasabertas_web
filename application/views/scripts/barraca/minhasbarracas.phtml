@@ -1,0 +1,74 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,3,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<style>
+#menu{display:none;}
+#conteudo{min-height: <?php echo ($login->nivel==1 || $login->nivel==4 ? "500" : "300")?>px;}
+ </style>
+ <div class="tituloPag">Barraca</div>
+
+
+
+<br>
+
+
+<!-- <div class="clearfix"></div> -->
+
+
+<br>
+<div>
+ <?php
+
+    if(isset($this->paginator) && count($this->paginator) > 0){
+		foreach($this->paginator as $index => $key)
+    	   echo '<a href="'
+              . $this->url(
+                    array(
+                        'action'=>($key['aceita_pagamento'])?"meus-produtos-pagamento":"meusprodutos",
+                        'controller'=>'Produtos',
+                        'id_barracas'=>$key['id_barraca']
+                    ),
+                    null,
+                    1
+                    )
+              . '"><div class="opcaoMenu">'
+              . $key['nome']
+              . '<div class="atalho" data-key="' 
+              . ($index+1)
+              . '">('
+              . ($index+1)
+              . ')</div>'
+              . "</div></a>\n";
+
+ 		}
+	else {
+	echo "<h1>Nenhuma barraca cadastrada</h1>";
+	}
+
+   ?>
+<br>
+
+ <?php
+
+    if(isset($this->paginator) && count($this->paginator) > 15){
+        echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+    }
+
+}
+?>
+</div>
+<script>
+  
+  $('.atalho').each(function(index, element){
+      shortcut.add(""+$(element).data('key'),function() {
+        abrirAtalho($(element).parent().parent().attr('href'));
+      },{
+        'type':'keydown',
+        'propagate':false,
+        'target':document
+      });
+
+    });
+</script>

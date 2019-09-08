@@ -1,0 +1,54 @@
+<?php echo $this->doctype();?>
+
+<html xml:lang="pt-br" lang="pt-br" xmlns="http://www.w3.org/1999/xhtml"> 
+
+    <head>
+  <?php   header('Content-type: text/html; charset=utf-8');?>
+        <?php echo $this->headTitle() ?>
+
+        <?php echo $this->headLink ()->appendStylesheet ($this->baseUrl('/css/mobile.css') );
+	//->appendStylesheet ($this->baseUrl("/styles/form.css"));?>
+            <?php echo $this->headMeta(); ?>
+            <?php echo $this->headScript(); ?>
+            <?php echo $this->headLink(); ?>
+         <script type="text/javascript">
+
+ function confirma(){
+		if(confirm("Tem certeza que deseja excluir?"))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_venda(a,b,c,d){
+		if(confirm("Confirma o débito de R$ "+ a +" no cartao: "+ b +" ( "+ c +" ) ?\n\nSaldo remanescente após a compra: R$ "+ d +"\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+
+function confirma_doacao(a,b,c,d){
+		if(confirm("Confirma a doação ?\n\n"))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_estorno_venda(a,b,c,d,e){
+		if(confirm("Tem certeza que deseja cancelar esta venda e estornar o valor?\n\nCartao: "+ a +" ( "+ b +" )\n\nProduto: "+ c +"\n\nValor: R$ "+ d + "\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_desativar(cc,cp,cs){
+		if(confirm("Tem certeza que deseja desativar o cartão "+ cc +" de " + cp + " ?\n\nEste procedimento gera automaticamente uma doação no valor de R$ "+ cs +".\n\n"))
+			return true;
+		else	
+			return false;
+	}
+ 
+ </script>
+        
+
+    </head>

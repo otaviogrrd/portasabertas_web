@@ -1,0 +1,100 @@
+<?php 
+echo $this->headMeta();
+$this->headScript()->appendFile('/js/jquery.js')
+				   ->appendFile('/js/jquery-ui.js','text/javascript');
+$this->headScript()->appendFile('/js/jquery.js');
+$this->headScript()->appendFile('/js/shortcut.js');
+
+echo $this->headScript(); 
+echo $this->headLink(); 
+
+?>
+    </head>
+         <script type="text/javascript">
+
+ function confirma(){
+		if(confirm("Tem certeza que deseja excluir?"))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_venda(a,b,c,d){
+		if(confirm("Confirma o débito de R$ "+ a +" no cartao: "+ b +" ( "+ c +" ) ?\n\nSaldo remanescente após a compra: R$ "+ d +"\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_ativacao(a,b){
+		if(confirm("Confirma a ativação do cartão "+ a +" para "+ b +"?\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_credito(a,b){
+		if(confirm("Confirma a inclusão de R$ "+ parseFloat(b).toFixed(2) +" no cartao "+ a +"?\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_estorno(a,b){
+		if(confirm("Confirma o estono de R$ "+ parseFloat(b).toFixed(2) +" do cartão "+ a +"?\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+function confirma_doacao(a,b,c,d){
+		if(confirm("Confirma a doação ?\n\n"))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_estorno_venda(a,b,c,d,elemento){
+ 	return confirm("Tem certeza que deseja cancelar esta venda e estornar o valor?\n\nCartao: "+ a +" ( "+ b +" )\n\nProduto: "+ c +"\n\nValor: R$ "+ d );
+ 	
+	}
+
+ function confirma_desativar(cc,cp,cs){
+		if(confirm("Tem certeza que deseja desativar o cartão "+ cc +" de " + cp + " ?\n\nEste procedimento gera automaticamente uma doação no valor de R$ "+ cs +".\n\n"))
+			return true;
+		else	
+			return false;
+	}
+
+ function confirma_fechar_caixa(tt,vd,cx){
+		if(confirm("Tem certeza que deseja encerrar o caixa "+ cx +" (R$ "+ tt + ") utilizado por " + vd + " ?\n\nEste procedimento não pode ser cancelado.\n\n"))
+			return true;
+		else	
+			return false;
+	}
+	var abrirAtalho = function(link){
+		document.location.href = link;
+	}
+	$(function() {
+	  	//teclas de atalho
+		$('.atalho').each(function(index, element){
+			shortcut.add($(element).data('key'),function() {
+				
+				abrirAtalho($(element).parent().parent().attr('href'));
+			},{
+				'type':'keydown',
+				'propagate':false,
+				'target':document
+			});
+
+		});
+
+
+
+
+	});
+
+	
+ </script>
+        
+
+

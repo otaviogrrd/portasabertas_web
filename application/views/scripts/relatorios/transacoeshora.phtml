@@ -1,0 +1,106 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+ <div class="tituloPag">Relatorios</div>
+
+<!--<a href="<?php echo $this->url(array('action'=>'new','controller'=>'Barraca'),null,1); ?>"> Incluir</a>
+-->
+<br>
+<br>
+<form action="<?php $this->url(array("controller"=>"Barraca","action"=>"index_vendas")) ?>" method="get">
+Pesquisar Venda: <input type="text" name="filtro" title="Voce pode pesquisar por cartao, barraca, operador e status .Pode usar AND OR LIKE para combinar ex: CARTAO=1001 AND STATUS=0">  
+
+
+<input type="submit" value="Buscar">
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(count($this->paginator) > 0){
+    ?>
+<table style="width: 800px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 250px">Hora</th>
+            <th class="rounded-company" style="width: 250px">Produto</th>
+            <th class="rounded-company" style="width: 100px">qtd</th>
+            <th class="rounded-company" style="width: 200px">total</th>
+       
+        </tr>
+    
+    <tbody>
+   
+        <?php
+        	$tvg=0;$tqg=0;
+        	$tvp=0;$tqp=0;
+        	$barraca=""; 
+        	foreach($this->paginator as $key){
+            	//if($barraca ==""){$barraca = $key['nome'];}
+        		if($barraca != $key['hora'])
+	        		{
+	        		if ($barraca !=""){
+		        		?>
+		        		<tr>
+			            <td class="listar-total" colspan=2><?php echo "TOTAL ".substr("0".$barraca.":00",-5); ?></td>
+			            <td class="listar-total"><?php echo $tqp; ?></td>
+			            <td class="listar-total">R$ <?php printf("%.2f",$tvp); ?></td>
+			            </tr>
+		        		<?php
+	        		}
+	        		$tvp=0;$tqp=0; 
+	        		$barraca=$key['hora'];
+	        		$barraca_count=0;
+	        		}
+	        	else{
+	        		$barraca_count++;
+	        		}
+	        	$tvp += $key['total'];$tvg += $key['total'];
+        		$tqp += $key['qtdv'];$tqg += $key['qtdv'];
+	        	?>
+	        	<tr>
+	        	<td class="listar-simples"><?php echo ($barraca_count==0?substr("0".$key['hora'].":00",-5):''); ?></td>
+	            <td class="listar-simples"><?php echo $key['descricao']; ?></td>
+	            <td class="listar-simples"><?php echo $key['qtdv']; ?></td>
+	            <td class="listar-simples">R$ <?php printf("%.2f",$key['total']); ?></td>
+		        </tr>
+        		<?php
+				 }
+				 //imprime o ultimo total
+	        	?>
+				<tr>
+					<td class="listar-total" colspan=2><?php echo "TOTAL ".substr("0".$barraca.":00",-5); ?></td>
+					<td class="listar-total"><?php echo $tqp; ?></td>
+					<td class="listar-total">R$ <?php printf("%.2f",$tvp); ?></td>
+				</tr>
+       		<tr>
+            <td class="listar-total" colspan=2>TOTAL GERAL</td>
+            <td class="listar-total"><?php echo $tqg; ?></td>
+            <td class="listar-total">R$ <?php printf("%.2f",$tvg); ?></td>
+            </tr>
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "Nenhum registro encontrado";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+}   

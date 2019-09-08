@@ -1,0 +1,78 @@
+
+
+<div id="header">
+    	<!--<div id="logo"></div>-->
+    	
+<?php 
+    	   $auth = Zend_Auth::getInstance ();
+    	        $login = $auth->getIdentity();
+      if($auth->hasIdentity()){
+      	?>
+     
+   	<div id="menu1">
+        	<a href="<?php echo $this->url(array('action'=>'index','controller'=>'vendedor'),null,1); ?>"">
+                <div class="opcaoMenu">
+                 Usuários
+                </div>
+            </a>
+            
+            <a href="<?php echo $this->url(array('action'=>'index','controller'=>'caixas'),null,1); ?>"">
+                <div class="opcaoMenu">
+                 Caixas
+                </div>
+            </a>
+            
+            
+            <a href="<?php echo $this->url(array('action'=>'index','controller'=>'Produtos'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Produtos
+                </div>
+            </a>
+          
+           <a href="<?php echo $this->url(array('action'=>'index','controller'=>'Barraca'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Barracas
+                </div>
+            </a>
+            <a href="<?php echo $this->url(array('action'=>'index','controller'=>'Equipamentos'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Equipamentos
+                </div>
+            </a>
+  			
+  			<a href="<?php echo $this->url(array('action'=>'index','controller'=>'Relatorios'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Relatorios
+                </div>
+            </a>
+            <a href="<?php echo $this->url(array('action'=>'range','controller'=>'cartao'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Criar cartoes
+                </div>
+            </a>
+            
+      </div>
+      <?php }?>
+   
+    <?php   
+    
+  
+   
+     $login = $auth->getIdentity();
+      if($auth->hasIdentity()){
+      	
+       
+		?>
+		
+      <div id="usuario_logado">
+     
+       <?php 
+         
+     // print_r($login);
+      
+      echo $login->login;
+      ?> | <a href="<?php echo $this->url(array('action'=>'sair','controller'=>'vendedor'),null,1); ?>"> Sair do sistema</a></div>
+     
+	</div>
+	
+	<?php }?>

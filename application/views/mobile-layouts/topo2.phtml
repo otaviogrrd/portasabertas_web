@@ -1,0 +1,51 @@
+<?php 
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+if($auth->hasIdentity() && $login->nivel != 1)
+	{
+    ?><div id="header"><?php 
+    }
+else
+    {
+    ?><div id="header2"><?php 
+    }
+ if($auth->hasIdentity()){
+    ?>
+     
+   	<div id="menu2">
+        	<a href="<?php echo $this->url(array('action'=>'index','controller'=>'cartao'),null,1); ?>"">
+                <div class="opcaoMenu">
+                 Créditos
+                </div>
+            </a>
+            
+            <!--<a href="<?php echo $this->url(array('action'=>'doacao','controller'=>'cartao'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Doar valores
+                </div>
+            </a>-->
+          
+  			<a href="<?php echo $this->url(array('action'=>'criar','controller'=>'cartao'),null,1); ?>"">
+                <div class="opcaoMenu">
+                   Associar
+            </a>
+                </div>      
+      </div>
+      <?php }
+      if($auth->hasIdentity() && $login->nivel != 1 ){
+      	
+       
+		?>
+		
+      <div id="usuario_logado">
+     
+       <?php 
+         
+     // print_r($login);
+      
+      echo $login->login;
+      ?> | <a href="<?php echo $this->url(array('action'=>'sair','controller'=>'vendedor'),null,1); ?>"> Sair do sistema</a></div>
+     
+	</div>
+	
+	<?php }?>

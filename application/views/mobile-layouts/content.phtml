@@ -1,0 +1,41 @@
+<body>
+
+<div id="clearfix"></div>
+<div id="conteudo_cima"></div>
+<div id="conteudo_centro">
+<div id="conteudo">
+<?php
+$auth = Zend_Auth::getInstance();
+if ($auth->hasIdentity()) {
+    $login = $auth->getIdentity();
+    switch ($login->nivel){
+	case 1:
+		echo $this->partial('topo1.phtml');
+		echo $this->partial('topo3.phtml');
+	case 2:
+		echo $this->partial('topo2.phtml');
+		break;
+	case 3:
+		echo $this->partial('topo3.phtml');
+		break;
+}
+    /*if ($login->nivel == 1)
+        echo $this->partial('topo1.phtml');
+    if ($login->nivel == 2)
+        echo $this->partial('topo2.phtml');
+    if ($login->nivel == 3)
+        echo $this->partial('topo3.phtml');*/
+}
+?>
+<div id="clearfix" style="height: 20px;"></div>
+ <?php
+echo $this->layout()->content;
+?>
+
+</div>
+</div>
+<!-- <div id="conteudo_baixo"></div> -->
+</body>
+
+
+</html>

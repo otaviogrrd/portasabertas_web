@@ -1,0 +1,344 @@
+<?php 
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,3,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
+	$max = 100;
+	if (in_array($this->barraca, array(1,2,26)))
+		$max = 100000;
+
+	$this->headScript()
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript');
+		
+	$this->headLink()
+		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
+	
+		
+	$this->headScript()->captureStart();
+?>
+baseUrl = "<?php echo $this->baseUrl(); ?>";
+var max = <?php echo $max ?>;
+$(function () {
+	var codigo_atual="";
+	$("#buscar").focus();
+	$("#buscar").focus(function(){
+		$('span#nome').html("&nbsp;");
+		$('span#creditos').html("&nbsp;");
+		});
+	$("#buscar").keydown(function () {
+		$('span#nome').html("&nbsp;");
+		$('span#creditos').html("&nbsp;");
+		$('#alerta').html("<h3>&nbsp;</h3>");
+	});
+	$("#pgdinheiro").keyup(function () {
+		var novo_valor=$("#pgdinheiro").val().replace(/,/,".");
+		novo_valor= novo_valor.replace(/('|"|-|´|`)/,"");
+		$("#pgdinheiro").val(novo_valor);
+		soma_qtd();
+	});
+	$("#pgcredito").keyup(function () {
+		var novo_valor=$("#pgcredito").val().replace(/,/,".");
+		novo_valor= novo_valor.replace(/('|"|-|´|`)/,"");
+		$("#pgcredito").val(novo_valor);
+		soma_qtd();
+	});
+	$("#pgdebito").keyup(function () {
+		var novo_valor=$("#pgdebito").val().replace(/,/,".");
+		novo_valor= novo_valor.replace(/('|"|-|´|`)/,"");
+		$("#pgdebito").val(novo_valor);
+		soma_qtd();
+	});
+	$("#pgcheque").keyup(function () {
+		var novo_valor=$("#pgcheque").val().replace(/,/,".");
+		novo_valor= novo_valor.replace(/('|"|-|´|`)/,"");
+		$("#pgcheque").val(novo_valor);
+		soma_qtd();
+	});
+	setInterval(function() {
+		//verifica se o leitor substituiu o codigo sem mudar de campo(ipad)
+		if($("#buscar").val() != codigo_atual){
+			codigo_atual= $("#buscar").val();
+			$("#buscar").trigger('change');
+			$('#alerta').html("<h3>&nbsp;</h3>");
+			}
+		//verifica se o leitor copiou o codigo mas ainda nao pesquisou o codigo(ipad)
+		if(!$("span#creditos").html().match(/\d+/) && $("#buscar").val().length > 7 ){
+			$("#buscar").trigger('change');
+			$('#alerta').html("<h3>&nbsp;</h3>");
+			$("#confirmar").attr("disabled",true);
+			}
+		//apaga o codigo digitado que nao existe no banco
+		if( !$("span#creditos").html().match(/\d+/) && $("#buscar").val().length > 7 ){
+			$("#buscar").val('ERR');
+			$('#alerta').html("<h3>&nbsp;</h3>");
+			$("#confirmar").attr("disabled",true);
+			}
+		}, 1500);
+	$(".qtd").keyup(function () {
+		soma_qtd();
+	});
+	$("#buscar").change(function () {
+		var id = $(this).val();
+		if (id.length > 8){
+		  id = id.substr(id.length - 9,8);
+		  $("#buscar").val(id);
+		  $.ajax({
+			url: baseUrl + '/cartao/portador/id/' + id,
+			dataType: 'json',
+			async    : false,
+		  	success: function(data) {
+		    	$('span#nome').html(data[0].descricao);
+		    	$('span#creditos').html(parseFloat(data[0].creditos).toFixed(2));
+		    	soma_qtd();
+		    	//$(".item").find('input').val('');
+		    	//alert('Load was performed.');
+			}
+		});
+		}
+	});
+	
+	$("form").submit(function () {
+		$("#buscar").trigger('change');
+		$(".qtd").trigger('blur');
+		
+		var total = parseFloat($(".vl_total").html()).toFixed(2);
+		var creditos=0;
+		if (parseFloat($("span#creditos").html()))
+			creditos += parseFloat($("span#creditos").html());
+		if (parseFloat($("#pgdinheiro").val()))
+			creditos += parseFloat($("#pgdinheiro").val());
+		if (parseFloat($("#pgcredito").val()))
+			creditos += parseFloat($("#pgcredito").val());
+		if (parseFloat($("#pgdebito").val()))
+			creditos += parseFloat($("#pgdebito").val());
+		if (parseFloat($("#pgcheque").val()))
+			creditos += parseFloat($("#pgcheque").val());
+		var	retorno = false;
+		var saldo=creditos - total;	
+		console.log(retorno);
+		console.log(total);
+		console.log(creditos);
+		
+		if ( saldo < 0 && total > 0){ 
+			alert('Saldo insuficiente R$ '+ saldo.toFixed(2));
+		}
+		else{
+			$("#confirmar").attr("disabled",true);
+			retorno= confirma_venda(total,$("#buscar").val(),$("span#nome").html(),saldo.toFixed(2));
+		}
+		if (retorno===false)
+			$("#confirmar").attr("disabled",retorno);
+		//return false;
+		return retorno;
+	});
+});
+function increment_qtd(campo,acao,numero){
+	//alert (campo+ ' '+ acao);
+	if(! parseFloat($("span#creditos").html())){
+		$("#buscar").trigger('change');
+		}
+	var x=document.getElementById(campo).value;
+	if(acao=='less' && x > numero - 1){
+		document.getElementById(campo).value= x - numero;
+		$(".qtd").trigger('blur');
+		if (document.getElementById(campo).value <0)
+			document.getElementById(campo).value = 0;
+		soma_qtd();
+		}
+	if(acao=='plus'){
+		var x=document.getElementById(campo).value;
+		//alert('ok');
+		document.getElementById(campo).value=parseInt(x) + numero;
+		if (document.getElementById(campo).value >max)
+			document.getElementById(campo).value = max;
+
+		soma_qtd();
+		}
+		};
+function soma_qtd(){
+	var item = $('.item');
+	var qtd = [];
+	var valor = [];
+	var total = 0;
+	var creditos=0;
+		if (parseFloat($("span#creditos").html()))
+			creditos += parseFloat($("span#creditos").html());
+		if (parseFloat($("#pgdinheiro").val()))
+			creditos += parseFloat($("#pgdinheiro").val());
+		if (parseFloat($("#pgcredito").val()))
+			creditos += parseFloat($("#pgcredito").val());
+		if (parseFloat($("#pgdebito").val()))
+			creditos += parseFloat($("#pgdebito").val());
+		if (parseFloat($("#pgcheque").val()))
+			creditos += parseFloat($("#pgcheque").val());
+			
+	item.find('.valor').each(function () {
+		valor.push($(this).val());
+	});
+	item.find('.qtd').each(function () {
+		var tmp = $(this).val();
+		if (tmp > max)
+			tmp = max
+		if (tmp < 0)
+			tmp = 0;
+		qtd.push(tmp);
+		$(this).val(tmp);
+	});
+		
+	$.each(qtd,function (i,val) {
+		if (val != '' && val > 0){
+			total += val * valor[i];
+		}
+	});
+	var saldo = creditos - total;
+	$("#valor_total").html(function () {
+		return '<span class="vl_total">' + total.toFixed(2) + '</span>';
+	});
+	$("#saldo_remanescente").html(function () {
+		if ( saldo > 0)
+			return '<span class="vl_total">' + saldo.toFixed(2) + '</span>';
+		else
+			return '<span class="vl_total_negativo">' + saldo.toFixed(2) + '</span>';
+		});
+	
+	$("#confirmar").attr("disabled", function () {
+		return (saldo >= 0 && creditos > 0 && total > 0) ? false : true;	
+	});
+}
+<?php $this->headScript()->captureEnd() ?>
+ 
+ <div class="tituloPag"><?php echo $this->nome;?></div>
+
+<br>
+
+
+<div class="clearfix" id="alerta">
+</div>
+
+
+<br>
+ <?php
+ $i=0;
+ if(isset ($this->paginator) && count($this->paginator) > 0 ){
+   	
+    ?>
+ <form method="post" action="../../../Vendas/salvavendachurrasco">
+
+<div id="container">
+	<p>
+	<table style="width: 750px;border: solid 1px #ccc ; text-align:left;">
+	<tr><th style="width: 360px" >
+		<div id="container-busca">
+			<label>Cartão</label><br>
+        	<input type="text" name="busca" size="10" class="buscar" id="buscar" autocomplete="off">
+	    </div></th>
+        <div id="container-portador">
+        <th style="width: 200px" >
+        <div class="span-creditos">Credito (R$)<br><span id="creditos">&nbsp;</span></div></th>
+        <th>
+        <div class="span-portador">Portador<br><span id="nome">&nbsp;</span></div></th>
+        </div>
+        <tr>
+       </table>
+	</p>
+</div>
+<table style="width: 900px;border: solid 1px #ccc ;">
+        <tr>
+            <!--<th class="rounded-company" style="width: 300px">Código do produto</th> -->
+            <th  style="width: 250px" class="vender">Produto</th>
+            <th  style="width: 200px" class="vender">Valor</th>
+            <th  style="width: 450px" class="vender">Quantidade</th>
+           <!--  <th  style="width: 150px" class="vender">Estoque</th>-->
+        </tr>
+    <tbody>
+   		
+        <?php
+   			foreach($this->paginator as $key): 
+         		//$this->_helper->viewRenderer->setNoRender();
+        		$barcodeOptions = array ('text' => 'ZEND-FRAMEWORK', 'barHeight' => 40);
+				// No required options
+				$rendererOptions = array();
+				//$img=Zend_Barcode::render('code39', 'image', $barcodeOptions, $rendererOptions);
+ ?>
+        <tr>
+            <!--  <td><img src='/Produtos/bar/id/<?php echo $key['id_produtos']?>'></img></td>-->
+            <td class="vender"><?php echo $key['descricao']; ?></td>
+            <td class="vender">R$ <?php printf("%.2f",$key['valor']); ?></td>
+            <td id="item<?php echo $i; ?>" class="item">
+            	<img class="button-quantidade" height=40 align="middle" src='/img/icon_less50.gif' id="iconless<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','less',50)"></img>
+                <img class="button-quantidade" height=40 align="middle" src='/img/icon_less10.gif' id="iconless<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','less',10)"></img>
+            	<img class="button-quantidade" height=40 align="middle" src='/img/icon_less5.gif' id="iconless<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','less',5)"></img>
+            	<img class="button-quantidade" height=40 align="middle" src='/img/icon_less2.gif' id="iconless<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','less',1)"></img>
+	            <input height=40 type="number" max='<?php echo $max?>' min='0' id="compra<?php echo $i?>" name="qtd[]"  class="qtd" autocomplete="off" style="text-align:center; width: 60px" value=0>
+                <img class="button-quantidade" height=40 align="middle" src='/img/icon_plus2.gif' id="iconplus<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','plus',1)"></img>
+	            <img class="button-quantidade" height=40 align="middle" src='/img/icon_plus5.gif' id="iconplus<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','plus',5)"></img>
+	            <img class="button-quantidade" height=40 align="middle" src='/img/icon_plus10.gif' id="iconplus<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','plus',10)"></img>
+	            <img class="button-quantidade" height=40 align="middle" src='/img/icon_plus50.gif' id="iconplus<?php echo $i?>" onclick="increment_qtd('compra<?php echo $i?>','plus',50)"></img>
+	            <input type="hidden" id="produto<?php echo $i?>" name="produto[]" autocomplete="off" value="<?php echo $key['id_produtos']?>">
+	            <input type="hidden" id="valor<?php echo $i?>" name="valor[]" autocomplete="off" value="<?php echo $key['valor']?>" class="valor">
+            </td>
+           <!--  <td class="vender"><?php echo $key['estoque'] ?></td>-->
+        </tr>
+        <?php $i++; endforeach; ?>
+    </tbody>
+    <tfoot>
+    	<tr>
+    		<td class="vender" colspan="2" style="text-align:right;"><strong>Total:</strong> </td>
+    		<td class="vender" id="valor_total"></td>
+    	</tr>
+    	<tr>
+    		<td class="vender" colspan="2" style="text-align:right;"><strong>Saldo após a compra:</strong> </td>
+    		<td class="vender" id="saldo_remanescente"></td>
+    	</tr>
+    </tfoot> 
+</table><br>
+<table style="width: 450px;border: solid 1px #ccc ;">
+	<tr>
+   <!--<th class="rounded-company" style="width: 300px">Código do produto</th> -->
+   <th  style="width: 280px" class="vender">Forma de pagamento</th>
+   <th  style="width: 200px" class="vender">Valor</th>
+   </tr>
+   <tbody>
+   <tr>
+   <td class="vender">Dinheiro</td>
+   <td class="vender"><input type="text" name="pgdinheiro" size="6" class="buscar" id="pgdinheiro" autocomplete="off" value=0></td>
+   </tr>
+   <tr>
+   <td class="vender">Cartão de Crédito</td>
+   <td class="vender"><input type="text" name="pgcredito" size="6" class="buscar" id="pgcredito" autocomplete="off" value=0></td>
+   </tr>
+   <tr>
+   <td class="vender">Cartão de Débito</td>
+   <td class="vender"><input type="text" name="pgdebito" size="6" class="buscar" id="pgdebito" autocomplete="off" value=0></td>
+   </tr>
+   <tr>
+   <td class="vender">Cheque</td>
+   <td class="vender"><input type="text" name="pgcheque" size="6" class="buscar" id="pgcheque" autocomplete="off" value=0></td>
+   </tr>
+   </tbody>
+</table>
+<br>
+<br>
+<input type="hidden" name="id_barraca" value="<?php echo $this->barraca?>">
+   <input type="submit" value="Efetuar compra" id="confirmar" disabled="disabled" class="vender">
+	</form>       
+       
+<?php }
+else {
+	
+	echo "<h2>Nenhum registro encontrado</h2>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(count($this->paginator) > 15){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+
+ }?>
+ <div id="dialog"></div>
+ <?php }?>

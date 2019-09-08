@@ -1,0 +1,13 @@
+<?php echo $this->form;?>
+
+<script>
+$(function() {
+    var contarLinhas = function(){
+        var count =  $('#cartoes').val().trim().split(/\r*\n/).length;
+        $('label[for="cartoes"').html("Cartões: " + count + ' registros');
+    }
+    $('#valor').attr('type', 'number');
+    $('#cartoes').change(contarLinhas);
+    $('#cartoes').keyup(contarLinhas);
+});
+</script>

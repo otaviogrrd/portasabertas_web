@@ -1,0 +1,68 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+ <div class="tituloPag">Produtos</div>
+
+<a href="<?php echo $this->url(array('action'=>'new','controller'=>'Produtos'),null,1); ?>"> Incluir</a>
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 800px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 300px">Código do produto</th>
+            <th class="rounded-company" style="width: 300px">Produto</th>
+            <th class="rounded-company" style="width: 300px">Valor</th>
+            <th class="rounded-company" style="width: 300px">Barraca</th>
+            <th class="rounded-company" style="width: 300px">Ações</th>
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar"><?php echo $key['id_produtos']; ?></td>
+            <td class="listar"><?php echo utf8_encode($key['descricao']); ?></td>
+            <td class="listar"><?php echo $key['valor']; ?></td>
+            <td class="listar"><?php echo $key['barraca']; ?></td>
+            <td class="listar"><a href="<?php echo $this->url(array('action'=>'edit','controller'=>'Produtos','id_produtos'=>$key['id_produtos']),null,1); ?>">Editar</a>
+             | <a href="<?php echo $this->url(array('action'=>'delete','controller'=>'Produtos','id_produtos'=>$key['id_produtos']),null,1); ?>">Deletar</a> </td>
+            
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(count($this->paginator) > 15){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+
+ }}?>

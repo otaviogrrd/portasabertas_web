@@ -1,0 +1,55 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+ <div class="tituloPag">Relatorios</div>
+
+<!--<a href="<?php echo $this->url(array('action'=>'new','controller'=>'Barraca'),null,1); ?>"> Incluir</a>
+-->
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(count($this->saidasprodutosArray) > 0){
+    
+    ?>
+<table style="width: 300px;border: solid 1px #ccc ;">
+    
+        <tr>
+           
+              <th class="rounded-company">Barracas</th>
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->saidasprodutosArray as $key): ?>
+        <tr>
+          
+            <td class="listar"><a href="<?php echo $this->url(array('action'=>'vendasbarraca','controller'=>'Relatorios','id_barracas'=>$key['id_barraca']),null,1); ?>"><?php echo $key['nome']; ?></a></td>
+
+
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+}
+   ?>

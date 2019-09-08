@@ -1,0 +1,22 @@
+<div id="logo"></div>
+<div class="clearfix"></div>
+<div class="titulos"><h1>Seminário Redemptoris Mater</h1></div>
+<br>
+<br>
+<div class="titulos"><h1>Login</h1></div>
+<?php
+/*$this->form->setAction($this->url());*/
+ echo $this->form; ?>
+
+
+<div class="clearfix"></div>
+<div class="#conteudo_baixo"></div>
+<script>
+    $('#descadastrar').click(function(){
+        $('<form>', {
+            "html": '<input type="hidden" name="descadastrar" value="descadastrar"/>',
+            'method': 'post'
+        }).appendTo(document.body).submit();
+        return false;
+    })
+</script>

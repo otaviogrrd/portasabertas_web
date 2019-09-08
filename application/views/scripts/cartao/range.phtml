@@ -1,0 +1,61 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+<h1>Criar numeração para cartões</h1>
+<?php 
+echo $this->form;
+?>
+ 
+
+
+<br>
+
+ <?php
+
+    if(count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 600px">
+    <thead>
+        <tr>
+            <th class="rounded-company" style="width: 150px">Número</th>
+            <th class="rounded-company" style="width: 250px">Portador</th>
+            <th class="rounded-company" style="width: 100px">Situação</th>
+        </tr>
+    </thead>
+    <tbody>
+   
+        <?php
+		$status=array(0=>'Disponivel', 1 => 'Em uso',2 => 'Desativado');
+        foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar-simples"><img src='/Produtos/bar/id/<?php echo $key['id_cartao']?>'></img></td>
+            <td class="listar-simples"><?php echo $key['descricao']; ?></td>
+            <td class="listar-simples"><?php echo $status[$key['status']]; ?></td>
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(count($this->paginator) > 2){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+    }
+}?>

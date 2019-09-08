@@ -1,0 +1,36 @@
+<div class="pagination">
+   <?php if (isset($this->previous)): ?>
+       <a title="Primeira Página" href="<?php echo $this->url(array('pagina' => $this->first)); ?>">&laquo; Primeira</a>|
+       <a title="Página Anterior" href="<?php echo $this->url(array('pagina' => $this->previous)); ?>">&laquo; Anterior</a>|
+    <?php else: ?>
+        <a class="current" title="Primeira Página" href="<?php echo $this->url(array('pagina' => $this->first)); ?>">&laquo; Primeira</a>|
+    <?php endif; ?>
+    <?php
+    $inicial=($this->current < 10? 1 : $this->current - 10);
+    if (count($this->pagesInRange) < 20)
+    	$final=count($this->pagesInRange);
+    else{
+    	if (count($this->pagesInRange) < $inicial + 20){
+    		$inicial=count($this->pagesInRange) -20;
+    		$final=count($this->pagesInRange);
+    		}
+    	else{
+    		$final=$inicial+20;
+    		}
+    	}
+    	
+    for ($page=$inicial;$page <= $final;$page++): ?>
+        <?php if ($page != $this->current && $page> 0): ?>
+            <a title="<?php echo $page; ?>" href="<?php echo $this->url(array('pagina' => $page)); ?>"><?php echo $page; ?></a>|
+        <?php else: ?>
+            <a class="current" title="<?php echo $page; ?>" href="<?php echo $this->url(array('pagina' => $page)); ?>"><?php echo $page; ?></a>|
+        <?php endif; ?>
+    <?php endfor; ?>
+     <!-- Link para a Próxima Página -->
+    <?php if (isset($this->next)): ?>
+        <a title="Próxima Página" href="<?php echo $this->url(array('pagina' => $this->next)); ?>">Próxima &raquo;</a>|
+        <a title="Última Página" href="<?php echo $this->url(array('pagina' => $this->last)); ?>">Última &raquo;</a>
+    <?php else: ?>
+		<a class="current" title="Última Página" href="<?php echo $this->url(array('pagina' => $this->last)); ?>">Última &raquo;</a>
+    <?php endif; ?>
+</div>

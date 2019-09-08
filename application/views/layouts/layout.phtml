@@ -1,0 +1,18 @@
+<?php echo $this->doctype();?>
+
+<html xml:lang="pt-br" lang="pt-br" xmlns="http://www.w3.org/1999/xhtml"> 
+
+    <head>
+  <?php   header('Content-type: text/html; charset=utf-8');?>
+        <?php echo $this->headTitle() ?>
+        <?php $this->helpdesk(); ?>
+
+        <?php echo $this->headLink ()->appendStylesheet ($this->baseUrl('/css/estilo.css') );
+	//->appendStylesheet ($this->baseUrl("/styles/form.css"));?>
+<?php 
+echo $this->partial('header.phtml');
+echo $this->flashMessenger();  
+echo $this->partial('content.phtml'); 
+echo $this->partial('footer.phtml');
+?>
+<?php echo $this->headScript(); ?>

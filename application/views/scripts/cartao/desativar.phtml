@@ -1,0 +1,8 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+	<h1>Desativar</h1>
+	<?php echo $this->form;
+} 

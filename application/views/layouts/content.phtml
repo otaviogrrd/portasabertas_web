@@ -1,0 +1,46 @@
+<body>
+
+<div id="clearfix"></div>
+<div id="conteudo_cima"></div>
+<div id="conteudo_centro">
+<div id="conteudo">
+<?php
+
+$auth = Zend_Auth::getInstance();
+if ($auth->hasIdentity()) {
+
+
+$login = Zend_Auth::getInstance()->getIdentity();
+
+$acl = new MinhaBiblioteca_Acl();
+$menu = $acl->getItensMenu($login->nivel);
+if (count($menu)>0 && Zend_Auth::getInstance()->hasIdentity()){
+?>
+<div id="header">
+	<?php 
+		foreach($menu as $item){
+			echo $this->itemMenu($item);
+		}    
+
+	?>
+
+	<div id="usuario_logado">
+		<a title="Endereço ip: <?php echo $_SERVER['REMOTE_ADDR']?>"><?php echo $login->login . '(' . $login->id_vendedor . ')'?> | </a>
+		<a title="Endereço ip: <?php echo $_SERVER['REMOTE_ADDR']?>" href="<?php echo $this->url(array('action'=>'sair','controller'=>'vendedor'),null,1); ?>"> Sair do sistema&nbsp;&nbsp;&nbsp;&nbsp;</a><br>
+		<a title="Endereço ip: <?php echo $_SERVER['REMOTE_ADDR']?>"><?php echo $_SERVER['REMOTE_ADDR']?></a>
+	</div>
+</div>
+
+<?php } 
+	}
+?>
+
+<div id="clearfix" style="height: 20px;"></div>
+ <?php
+echo $this->layout()->content;
+?>
+<br />
+
+</div>
+
+

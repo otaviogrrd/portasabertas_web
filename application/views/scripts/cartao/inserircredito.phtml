@@ -1,0 +1,107 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
+	$this->headScript()
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript');
+		
+	$this->headLink()
+		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
+	
+		
+	$this->headScript()->captureStart();
+	?>
+	<script>
+	baseUrl = "<?php echo $this->baseUrl(); ?>";
+	$(function () {
+		
+		$("#id_forma").attr('required', 'required').attr('aria-required', 'true');
+
+		var creditos=parseFloat($("#creditos").val());
+		$("#creditos").val('R$ ' + parseFloat($("#creditos").val()).toFixed(2));
+		$("#valor").keyup(function(){
+				var novo_valor=$("#valor").val().replace(/,/,".");
+				novo_valor= novo_valor.replace(/(-|'|"|`|´|;)/,"");
+				$("#valor").val(novo_valor);
+				//$("#valor").val().replace(novo_valor);
+			if ($("#situacao").val() == "Em uso" && parseFloat(novo_valor) >= 0){
+				$("#saldo_futuro").val('R$ ' + parseFloat(parseFloat(novo_valor) + parseFloat(creditos)).toFixed(2));
+				$("#confirmar").attr("disabled",false);
+				}
+			else{
+				$("#confirmar").attr("disabled",true);
+				$("#saldo_futuro").val(" ");
+				}
+			});
+		$("#id_cartao").change(function () {
+			var id = $(this).val().replace(/\D/g,"");
+			$('#descricao').val(" ");
+			$('#situacao').val(" ");
+			$("#submit").attr("disabled",true);
+			if (id.length > 7){
+			  if (id.length > 8)
+			  	id = id.substr(id.length - 9,8);
+			  $("#id_cartao").val(id);
+			  $.ajax({
+				url: baseUrl + '/cartao/portador/id/' + id,
+				dataType: 'json',
+				async    : false,
+			  	success: function(data) {
+				  	$('#descricao').val(data[0].descricao);
+			  		$('#situacao').val(data[0].status);
+			  		
+
+			    	//$('span#creditos').html(parseFloat(data[0].creditos).toFixed(2));
+			    	//$(".item").find('input').val('');
+			    	//alert('Load was performed.');
+					}
+				});
+			}
+		});
+		$("form").submit(function () {
+			var	retorno = false;
+			
+			$("#confirmar").attr("disabled",true);
+			retorno= confirma_credito($("#id_cartao").val(),$("#valor").val());
+			
+			if (retorno===false)
+				$("#confirmar").attr("disabled",retorno);
+			//return false;
+			return retorno;
+		});
+		
+		setInterval(function() {
+			//formata o codigo apos a leitura do cartao
+			var id = $("#id_cartao").val();
+			if (id.length > 8){
+				 id = id.substr(id.length - 9,8);
+				  $("#id_cartao").val(id);
+				}
+			if($("#situacao").val() == ""){
+				$("#id_cartao").trigger('change');
+				}
+			//Altera o id do status por nome
+			if($("#situacao").val() == "0"){
+				$("#situacao").val("Disponível");
+				}
+			if($("#situacao").val() == "1"){
+				$("#situacao").val("Em uso");
+				}
+			if($("#situacao").val() == "2"){
+				$("#situacao").val("Desativado");
+				}
+			}, 1200);
+		
+		});
+	</script>
+	 <div class="tituloPag">Cartões</div>
+<br>
+<br>
+	<h1>Inserir Crédito</h1>
+	<div ><?php echo $this->mensagem  ?></div> 
+	<table style="width: 950px"></table>
+	<?php 
+	echo $this->form;
+}?>

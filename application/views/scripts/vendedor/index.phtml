@@ -1,0 +1,69 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,4); 
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+ <div class="tituloPag">Usuários</div>
+
+<a class="listar" href="<?php echo $this->url(array('action'=>'new','controller'=>'vendedor'),null,1); ?>"> Incluir</a>
+<br>
+<br>
+
+
+<div class="clearfix"></div>
+ 
+
+<br>
+ <?php
+
+    if(isset($this->paginator) && count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 800px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 100px">Código</th>
+            <th class="rounded-company" style="width: 250px">Login</th>
+            <th class="rounded-company" style="width: 250px">Nível</th>
+              <th class="rounded-company" style="width: 300px">Ações</th>
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar-simples"><?php echo $key['id_vendedor']; ?></td>
+            <td class="listar-simples"><?php echo utf8_encode($key['login']); ?></td>
+            <td class="listar-simples"><?php if($key['nivel'] == 1) echo "Administrador";
+            if($key['nivel'] == 2) echo "Caixa";
+            if($key['nivel'] == 3) echo "Barraca";
+            if($key['nivel'] == 4) echo "Fiscal de Barraca";
+            
+            ?></td>
+            
+            <td class="listar"><a href="<?php echo $this->url(array('action'=>'edit','controller'=>'vendedor','id_vendedor'=>$key['id_vendedor']),null,1); ?>">Editar</a>
+             | <a href="<?php echo $this->url(array('action'=>'delete','controller'=>'vendedor','id_vendedor'=>$key['id_vendedor']),null,1); ?>">Deletar</a> </td>
+            
+             
+        </tr>
+        <?php endforeach; ?>
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "<h1>Nenhum registro encontrado</h1>";
+	
+}
+   ?>
+<br>
+
+ <?php
+if(isset($this->paginator))
+	echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+}?>

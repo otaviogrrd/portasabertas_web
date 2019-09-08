@@ -1,0 +1,48 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,3);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+ <div class="tituloPag">Produtos</div>
+
+
+<br>
+<br>
+
+<form action="salvavenda" method="post">
+
+Digite o código do cartão: <input type="text" name="cartao">
+<div class="clearfix"></div>
+Confirma a venda no valor de R$ <?php echo $this->valor;?> ?
+
+<?php 
+$i = 0;
+
+while($i < count($this->valor))
+     	{
+ ?>    
+      
+          <input type="hidden" name="valor[]" value="<?php echo $this->valor[$i]?>">
+          <input type="hidden" name="produto[]" value="<?php echo $this->produto[$i]?>">
+          <input type="hidden" name="compra[]" value="<?php echo $this->compra[$i]?>">
+          
+         
+<?php           
+       $i++; }
+?>
+
+
+<input type="hidden" name="valor" value=" <?php echo $this->valor;?>">
+<input type="hidden" name="id_barraca" value=" <?php echo $this->barraca;?>">
+
+
+<br>
+<br>
+
+<div>
+<input type="submit" value="Sim">
+<input type="button" value="Não" onclick="window.history.back(-1)">
+ </div>
+</form>
+<?php }?>

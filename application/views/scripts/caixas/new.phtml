@@ -1,0 +1,9 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+	<h1>Novo Caixa</h1>
+	<?php echo $this->form; ?>
+	<div class="clearfix"></div>
+<?php }?>

@@ -1,0 +1,23 @@
+<div class="clearfix"></div>
+<div class="titulos"><h1>Seminário Redemptoris Mater</h1></div>
+<br>
+<br>
+<div class="titulos"><h1>Administração</h1></div>
+<p>Muito cuidado, ao enviar esse formulário, todos os dados serão excluídos inclusive das barracas, produtos, vendedores, vendas, equipamentos, créditos. Tudo será excluído. Não há janela de confirmação, uma vez que for enviado um arquivo contendo os números dos cartões, a limpeza acontecerá.</p>
+<?php
+
+ echo $this->form; 
+
+if ($this->log){
+    echo "<h5>Limpeza de tabelas</h5><pre>" . $this->log . "</pre>";
+}
+if ($this->inclusao){
+    echo "<h5>Inclusão em tabelas</h5><pre>" . $this->inclusao . "</pre>";
+}
+if ($this->resetCartoes){
+    echo "<h5>Cartões reutilizados</h5><pre>" . $this->resetCartoes . "</pre>";
+}
+?>
+ 
+<div class="clearfix"></div>
+<div class="#conteudo_baixo"></div>

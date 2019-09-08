@@ -1,0 +1,108 @@
+<?php 
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
+	$this->headScript()
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript');
+		
+	$this->headLink()
+		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
+	
+		
+	$this->headScript()->captureStart();
+?>
+<script>
+$(function () {
+	$("#filtro").focus();
+	setInterval(function() {
+		//formata o codigo apos a leitura do cartao
+		var id = $("#filtro").val();
+		if (id.length > 8){
+			 id = id.substr(id.length - 9,8);
+			  $("#filtro").val(id);
+			}
+		}, 1200);
+	});
+</script>
+ 
+ <div class="tituloPag">Relatorios</div>
+
+<!--<a href="<?php echo $this->url(array('action'=>'new','controller'=>'Barraca'),null,1); ?>"> Incluir</a>
+-->
+<br>
+<br>
+<form action="<?php $this->url(array('action'=>'receita','controller'=>'relatorios')) ?>" method="get">
+<h2>Pesquisar Receita:</h2> <input class="buscar" type="text" id="filtro" name="filtro" autocomplete="off" <?php echo "value='".(isset($_REQUEST['filtro'])?$_REQUEST['filtro']:"")."'";?> title="Voce pode pesquisar por cartao(CARTAO=1001), por caixa(CAIXA=1) ou por operador(VENDEDOR=10). Pode usar AND OR LIKE para combinar ">  
+
+
+
+
+
+<input type="submit" value="Buscar" class="buscar">
+ 
+
+</form>
+
+<div class="clearfix"></div>
+
+
+<br>
+ <?php
+
+    if(count($this->paginator) > 0){
+    
+    ?>
+<table style="width: 950px;border: solid 1px #ccc ;">
+    
+        <tr>
+            <th class="rounded-company" style="width: 200px">Hora</th>
+            <th class="rounded-company" style="width: 130px">Cartão</th>
+            <th class="rounded-company" style="width: 150px">Portador</th>
+            <th class="rounded-company" style="width: 200px">Forma de Pagamento</th>
+            <th class="rounded-company" style="width: 300px">Caixa</th>
+            <th class="rounded-company" style="width: 150px">Operador</th>
+            <th class="rounded-company" style="width: 250px">Valor</th>
+       
+        </tr>
+    
+    <tbody>
+   
+        <?php foreach($this->paginator as $key): ?>
+        <tr>
+            <td class="listar-simples" ><?php echo $key['dthr']; ?></td>
+            <td class="listar-simples"><img src='/Produtos/bar/id/<?php echo $key['id_cartao']?>'></img></td>
+            <td class="listar-simples"><?php echo $key['Portador']; ?></td>
+            <td class="listar-simples"><?php echo $key['Forma']; ?></td>
+            <td class="listar-simples"><?php echo $key['Caixa']; ?></td>
+            <td class="listar-simples"><?php echo $key['login']; ?></td>
+            <td class="listar-simples">R$ <?php printf("%.2f",$key['valor']); ?></td>
+            
+           <!-- <td><a href="<?php //echo $this->url(array('action'=>'edit','controller'=>'Barraca','id_barracas'=>$key['id_barraca']),null,1); ?>">Editar</a>
+             | <a href="<?php //echo $this->url(array('action'=>'delete','controller'=>'Barraca','id_barracas'=>$key['id_barraca']),null,1); ?>">Deletar</a> </td>
+            -->
+        </tr>
+        <?php endforeach; ?>
+       
+       
+       
+    
+    </tbody>
+  
+</table>
+<?php }
+else {
+	
+	echo "Nenhum registro encontrado";
+	
+}
+   ?>
+<br>
+
+ <?php
+
+    if(count($this->paginator) > 2){
+  
+echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
+    }}?>

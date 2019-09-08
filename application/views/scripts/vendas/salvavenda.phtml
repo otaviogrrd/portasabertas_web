@@ -1,0 +1,16 @@
+<?php
+$auth = Zend_Auth::getInstance ();
+$login = $auth->getIdentity();
+$permissoes=array(1,2,3,4);
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
+ 
+	<div class="tituloPag">Venda</div>
+	<br>
+	<br>
+	
+	<?php echo $this->mensagem?>
+	<br>
+	<br>
+	<a href="<?php echo $this->url(array('action'=>'minhasbarracas','controller'=>'barraca'),null,1); ?>">Voltar</a>
+
+<?php }?>
