@@ -36,6 +36,39 @@ public function preDispatch() {
         } 
     }
     
+    /*
+    Action criada para receber a pagina de carregamento de credito apos a inserção de credito 
+    sem o botão de inserir, para evitar erros dos caixas
+    */
+    public function creditosucessoAction ()
+    {
+        if ($this->_request->getParam('busca') != "") {
+            $busca = $this->_request->getParam('busca');
+            $busca = preg_replace ('@(\'|"|´|`|;|\(|\))@',"",$busca); 
+            if ($busca != ""){
+	            $cartao = new Application_Model_Cartao();
+	        	$cartaoArray = $cartao->pesquisar($busca);
+                $creditos = new Application_Model_Creditos();
+                foreach ($cartaoArray as $key => $value) {
+                    $denarios = $creditos->select()
+                                         ->where('id_cartao = ?', $value['id_cartao'])
+                                         ->where('id_forma = 5')
+                                         ->query()
+                                         ->fetchAll();
+                    if (count($denarios) > 0){
+                        $cartaoArray[$key]['tem_denario'] = true;
+
+                    }
+                }
+	            $paginator = Zend_Paginator::factory($cartaoArray);
+	            $paginator->setItemCountPerPage(1000);
+	            $paginator->setCurrentPageNumber(
+	            $this->_request->getParam('pagina'));
+	            $this->view->paginator = $paginator;
+            }
+        } 
+    }
+
 	public function portadorAction ()
     {
 		$busca = $this->_request->getParam('id');
@@ -107,7 +140,10 @@ public function preDispatch() {
                 
                 $entrada = new Application_Model_Creditos();
                 $entrada->insert($data);
-                $this->_redirect("/cartao?busca={$data['id_cartao']}");
+                $_SESSION['ALERTA'][]="Crédito inserido com sucesso!!";
+                    $this->getHelper('flashMessenger')
+                         ->addMessage(array('success'=>"Crédito inserido com sucesso!!")); 
+                $this->_redirect("/cartao/creditosucesso?busca={$data['id_cartao']}");
 				}
 			else{
 				$this->view->mensagem =" Endereço IP do Caixa não cadastrado (".$this->getRequest()->getServer('REMOTE_ADDR').")!";
