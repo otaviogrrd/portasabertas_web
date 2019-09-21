@@ -15,7 +15,7 @@ class Application_Model_Cartao extends Zend_Db_Table_Abstract
     public function pesquisar($busca){
         $auth = Zend_Auth::getInstance ();
         $login = $auth->getIdentity();
-
+        
         try {
            return $this->pesquisarNumeroCartao($busca);  
          } catch (Exception $e) {
