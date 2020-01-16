@@ -13,7 +13,7 @@ public function preDispatch() {
             $busca = $this->_request->getParam('busca');
             $busca = preg_replace ('@(\'|"|´|`|;|\(|\))@',"",$busca); 
             if ($busca != ""){
-	            $cartao = new Application_Model_Cartao();
+                $cartao = new Application_Model_Cartao();
 	        	$cartaoArray = $cartao->pesquisar($busca);
                 $creditos = new Application_Model_Creditos();
                 foreach ($cartaoArray as $key => $value) {
