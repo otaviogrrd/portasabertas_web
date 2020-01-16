@@ -336,16 +336,18 @@ if (isset($_SESSION['ALERTA']) && is_array($_SESSION['ALERTA']))
         <td class="listar-simples">
         	<?php if ($key['status'] ==1) {
         			#cartao ativo e em uso /relatorios/transacoes?filtro=12345678
-        		 	echo '<a href="' . $this->url(array('action'=>'inserircredito','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1).'">Inserir  </a>';
-					if( $key['creditos'] > 0 ){
-						echo '<a href="' . $this->url(array('action'=>'estorno','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'"> | Estornar</a>';
-						echo '<br/><a href="' . $this->url(array('action'=>'mesclar','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">  Transferir  </a>';
-					}    
-					if( $key['creditos'] >= 0 ){
-						echo '<a href="' . $this->url(array('action'=>'desativar','controller'=>'Cartao','id_cartao'=>$key['id_cartao'],'s'=>$key['creditos']),null,1).'" onclick="return confirma_desativar(\''.$key['id_cartao'].'\',\''.$key['descricao'].'\',\''.$key['creditos'].'\');">  |  Desativar  </a>';
-						echo '<br/><a href="' . $this->url(array('action'=>'substituir','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">Substituir</a>';
-					}
- 	       		  }            	 
+            echo '<a href="' . $this->url(array('action'=>'inserircredito','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1).'">Inserir  </a>';
+            if( $key['creditos'] > 0 ){
+              echo '<a href="' . $this->url(array('action'=>'estorno','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'"> | Estornar</a>';
+              echo '<br/><a href="' . $this->url(array('action'=>'mesclar','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">  Transferir  </a>';
+            }    
+            if( $key['creditos'] >= 0 ){
+              echo '<a href="' . $this->url(array('action'=>'desativar','controller'=>'Cartao','id_cartao'=>$key['id_cartao'],'s'=>$key['creditos']),null,1).'" onclick="return confirma_desativar(\''.$key['id_cartao'].'\',\''.$key['descricao'].'\',\''.$key['creditos'].'\');">  |  Desativar  </a>';
+              echo '<br/><a href="' . $this->url(array('action'=>'substituir','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">Substituir</a>';
+            }  
+            echo "<br>";
+            echo '<a href="' . $this->url(array('action'=>'vendasbarraca','controller'=>'relatorios','id_barracas'=>'0','id_cartao'=>$key['id_cartao']),null,1).'">Cancelar Vendas</a>';
+            }  
             ?>
             </td>
         <td class="listar-simples">
