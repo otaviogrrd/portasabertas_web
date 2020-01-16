@@ -23,9 +23,13 @@ class MinhaBiblioteca_Forms_Produtos extends Zend_Form {
 		$barraca ->addMultiOptions($obj_barracas->fetchPair());
 		$this->addElement($barraca);
 		
+        $ocultar = $this->createElement('checkbox', 'ocultar', array('label' => 'Ocultar?', 'class' => 'input-m', 'tabindex'=>6));
+        $this->addElement($ocultar);
         
+        $ordem = $this->createElement('text', 'ordem', array('label' => 'Ordem de exibição na lista', 'class' => 'input-m', 'tabindex'=>7));
+        $this->addElement($ordem);
         
-        $submit = $this->createElement('submit', 'submit', array('label' => 'Salvar', 'class' => 'input-pp', 'tabindex'=>6));
+        $submit = $this->createElement('submit', 'submit', array('label' => 'Salvar', 'class' => 'input-pp', 'tabindex'=>8));
         $this->addElement($submit);
         
       

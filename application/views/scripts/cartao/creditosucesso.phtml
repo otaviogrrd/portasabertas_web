@@ -19,6 +19,9 @@ $this->headScript()->captureStart();
      .cartaoDenario{
         background-color: green;
      }
+     .cartaoChurrasco{
+        background-color: indianred;
+	 }
  </style>
  <div class="tituloPag">Cartões</div>
 
@@ -70,7 +73,7 @@ if (isset($_SESSION['ALERTA']) && is_array($_SESSION['ALERTA']))
 		$status=array(0=>'Disponivel', 1 => 'Em uso',2 => 'Desativado');
         foreach($this->paginator as $key): ?>
 
-        <tr class='<?php echo ($key['tem_denario'])? 'cartaoDenario': '';?>'>
+        <tr class='<?php echo ( $key['tp_cartao'] == 1 && $key['creditos'] < 0 )? 'cartaoChurrasco' : (($key['tem_denario'])?'cartaoDenario':'');?>'> 
             <td class="listar-simples"><?php echo $key['id_cartao']?></td>
             <?php if(isset($_REQUEST['busca']) && $_REQUEST['busca']){?>
             <td class="listar-simples">R$ <?php printf("%.2f",$key['creditos']); ?></td>

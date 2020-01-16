@@ -20,6 +20,7 @@ class Application_Model_Produtos extends Zend_Db_Table_Abstract
                         ->from('tb_produtos')
                         ->join('tb_barracas', 'tb_produtos.barraca = tb_barracas.id_barraca')
                         ->order('tb_barracas.nome')
+                        ->order('tb_produtos.ordem')
                         ->order('tb_produtos.descricao');
                         //->where('users_id=?', $user_id)
 
@@ -28,7 +29,7 @@ class Application_Model_Produtos extends Zend_Db_Table_Abstract
     
     public function getPrecos(){
         return $this->select()
-                    ->where('id_produtos > 0')
+                    ->where('ocultar = 0 and id_produtos > 0')
                     ->query()
                     ->fetchAll();
     }

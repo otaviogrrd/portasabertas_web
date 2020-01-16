@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $auth = Zend_Auth::getInstance ();
 $login = $auth->getIdentity();
 $permissoes=array(1,2,4);
@@ -27,7 +27,7 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 		$("#creditos").val('R$ ' + parseFloat($("#creditos").val()).toFixed(2));
 		$("#valor").keyup(function(){
 				var novo_valor=$("#valor").val().replace(/,/,".");
-				novo_valor= novo_valor.replace(/(-|'|"|`|�|;)/,"");
+				novo_valor= novo_valor.replace(/(-|'|"|`|´|;)/,"");
 				$("#valor").val(novo_valor);
 				//$("#valor").val().replace(novo_valor);
 			if (parseFloat(novo_valor)){

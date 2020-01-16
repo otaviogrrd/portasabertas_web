@@ -37,11 +37,14 @@ public function preDispatch() {
         $b = $barracasArray->toArray();
         if (count($b)==1){
             $b = $barracasArray[0];
-            if ($b['aceita_pagamento'])
-                $action = 'meus-produtos-pagamento';
-            else
-                $action = 'meusprodutos';
-            
+            if ($b['aceita_negativo']){
+                $action = 'meus-produtos-negativo';
+			}else{
+				if ($b['aceita_pagamento'])
+					$action = 'meus-produtos-pagamento';
+				else
+					$action = 'meusprodutos';
+            }
             $this->_redirect(
                 $this->view->url(
                     array(

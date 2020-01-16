@@ -10,8 +10,11 @@ class MinhaBiblioteca_Forms_Barracas extends Zend_Form {
 
         $action = $this->createElement('checkbox', 'aceita_pagamento', array('label' => 'Aceita pagamento?', 'class' => 'input-m', 'tabindex'=>2));
         $this->addElement($action);
+		
+        $action2 = $this->createElement('checkbox', 'aceita_negativo', array('label' => 'Aceita Negativo?', 'class' => 'input-m', 'tabindex'=>3));
+        $this->addElement($action2);
 
-        $submit = $this->createElement('submit', 'submit', array('label' => 'Salvar', 'class' => 'input-pp', 'tabindex'=>3));
+        $submit = $this->createElement('submit', 'submit', array('label' => 'Salvar', 'class' => 'input-pp', 'tabindex'=>4));
         $this->addElement($submit);
         
         	

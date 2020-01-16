@@ -52,6 +52,30 @@ public function preDispatch() {
         $this->_redirect('/Produtos/meusprodutos/id_barracas/'.$id_barraca);
         #$this->_redirect('/relatorios/vendasbarraca/id_barracas/'.$id_barraca);
     }
+	
+    public function salvavendanegativoAction ()
+    {
+        $data['id_cartao']= $_POST['busca'];
+        $auth = Zend_Auth::getInstance();
+       $login = $auth->getIdentity();
+       $data['id_vendedor'] = $login->id_vendedor;
+       $id_barraca = $this->_request->getParam('id_barraca');
+        $i=0;
+        while ($i < count($_POST['produto'])) {
+                if (is_numeric($_POST['qtd'][$i]) && $_POST['qtd'][$i] > 0){
+                    $data['id_produto']=$_POST['produto'][$i];
+                    $data['qtd']=$_POST['qtd'][$i];
+                    $data['valor']=($_POST['valor'][$i] * $_POST['qtd'][$i]);
+                    $venda = new Application_Model_Vendas();
+                    $venda->insert($data);
+                    }
+                $i ++;
+                }
+        $_SESSION['ALERTA'][]="Registro de venda realizado com sucesso.";
+          $this->getHelper('flashMessenger')
+               ->addMessage(array('success'=>"Registro de venda realizado com sucesso.")); 
+        $this->_redirect('/Produtos/meus-produtos-negativo/id_barracas/'.$id_barraca);
+    }
     public function salvavendachurrascoAction ()
     {
         #id do operador
@@ -118,6 +142,26 @@ public function preDispatch() {
         $venda = new Application_Model_Vendas();
         $data= array('status'=> 0);
         $venda->update($data, 'id_venda=' .$id_venda, 'id_vendedor='.$id_vendedor);
+        ?><script type="text/javascript">alert('Venda estornada com sucesso.')</script><?php 
+        $this->getHelper('flashMessenger')
+               ->addMessage(array('success'=>"Venda estornada com sucesso.")); 
+        $this->_redirect('/relatorios/vendasbarraca/id_barracas/'.$id_barraca);
+    }
+    public function estornounicoAction ()
+    {
+        $auth = Zend_Auth::getInstance();
+        $login = $auth->getIdentity();
+        $id_vendedor = $login->id_vendedor;
+        $id_venda = $this->_request->getParam('id_venda');
+        $id_barraca = $this->_request->getParam('id_barraca');
+        $qtd = $this->_request->getParam('qtd');
+        $valor = $this->_request->getParam('valor');
+		$qtd = $qtd - 1;
+        $valor = $valor * $qtd;
+        $venda = new Application_Model_Vendas();
+        $venda->update(
+		array( 'qtd'=> $qtd   ,
+               'valor'=> $valor ), 'id_venda=' .$id_venda, 'id_vendedor='.$id_vendedor);
         ?><script type="text/javascript">alert('Venda estornada com sucesso.')</script><?php 
         $this->getHelper('flashMessenger')
                ->addMessage(array('success'=>"Venda estornada com sucesso.")); 

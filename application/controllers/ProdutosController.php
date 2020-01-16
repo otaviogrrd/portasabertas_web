@@ -25,7 +25,8 @@ public function meusprodutosAction ()
 	        
 	        $produtos = new Application_Model_Produtos();
 	        $produtosArray = $produtos->select()
-	        						  ->where("barraca = ?", $id_barracas)
+	        						  ->where("ocultar = 0 and barraca = ?", $id_barracas)
+	        						  ->order("ordem", $id_barracas)
 	        						  ->query()
 	        						  ->fetchAll();
 	        $paginator = Zend_Paginator::factory($produtosArray);
@@ -43,6 +44,31 @@ public function meusprodutosAction ()
     }
 
 public function meusProdutosPagamentoAction ()
+    {
+    	#fixo nesta versao, evoluir para o tipo da barraca na proxima.
+    	$id_barracas = $this->_request->getParam('id_barracas');
+    	if(preg_match("/\d+/",$id_barracas)){
+	        
+	        $produtos = new Application_Model_Produtos();
+	        $produtosArray = $produtos->select()
+	        						  ->where("barraca = ?", $id_barracas)
+	        						  ->query()
+	        						  ->fetchAll();
+	        $paginator = Zend_Paginator::factory($produtosArray);
+	        $paginator->setItemCountPerPage(50);
+	        $paginator->setCurrentPageNumber($this->_request->getParam('pagina'));
+	        $this->view->paginator = $paginator;
+	        $this->view->barraca = $id_barracas;
+	        $barracas = new Application_Model_Barracas();
+	        $barraca = $barracas->select()
+	        				    ->where("id_barraca = ?", $id_barracas)
+	        				    ->query()
+	        				    ->fetchObject();
+	        $this->view->nome = $barraca->nome;
+	        
+    		}
+    }	
+public function meusProdutosNegativoAction ()
     {
     	#fixo nesta versao, evoluir para o tipo da barraca na proxima.
     	$id_barracas = $this->_request->getParam('id_barracas');
@@ -320,7 +346,7 @@ public function deleteAction() {
 		}
 			
 	public function pdf3Action() {
-			$this->_helper->viewRenderer->setNoRender();
+		$this->_helper->viewRenderer->setNoRender();
 		$this->_helper->layout->disableLayout();
 		
 		$cartao = new Application_Model_Cartao();
@@ -370,9 +396,70 @@ public function deleteAction() {
         	$codigos++;
         	}
 		}
+		
+	public function pdf4Action() {
+		// Otávio 2020-01-15 adicionado este método para imprimir os códigos dos cartões comanda
+		// para fazer isso basta temporariamente substituir o método de consulta de preços(logo abaixo)
+		// o resultado será diversos pdf gerados na pasta public
+		$this->_helper->viewRenderer->setNoRender();
+		$this->_helper->layout->disableLayout();
+		
+		$cartao = new Application_Model_Cartao();
+        $cartaoArray = $cartao->select()
+	        				  ->where("tp_cartao = 1")
+							  ->order('descricao')
+	        				  ->query()
+	        				  ->fetchAll();
+        $pagina=1;
+        $codigos=1;
+        foreach ($cartaoArray as $cb => $value){			
+        	switch ($codigos){
+        		case 34:
+					// and the end render your Zend_Pdf 
+					$pdfWithBarcode->save("codigos_PA3_{$pagina}.pdf");
+					print "<a href='/codigos_PA3_{$pagina}.pdf'> pagina{$pagina}..ok</a><br>";
+					$codigos=1;
+					$pagina++;
+				case 1:
+        			Zend_Pdf_Page::SIZE_A4;
+					$pdf = new Zend_Pdf();
+					//a font is mandatory for Pdf 
+					Zend_Barcode::setBarcodeFont(dirname(__FILE__) . '/Vera.ttf'); 
+					$leftOffset=30;
+					$topOffset=30;
+			}
+			// desenha os codigos
+			$barcodeOptions = array('text' =>  $value['id_cartao'] , 'barHeight' => 32,'fontSize'=> 8,'factor' => 3); 
+			$rendererOptions = array('topOffset' => $topOffset,'leftOffset'=> $leftOffset); 
+			if ($leftOffset==30)
+				$pdfWithBarcode = Zend_Barcode::factory('ean13', 'pdf', 
+								  $barcodeOptions, $rendererOptions)->setResource($pdf)->draw(); 
+			else
+				$pdfWithBarcode = Zend_Barcode::factory('ean13', 'pdf', 
+								  $barcodeOptions, $rendererOptions)->setResource($pdfWithBarcode)->draw();
+			switch($leftOffset){
+				case 30:
+					$leftOffset=220;
+					break;
+				case 220:
+					$leftOffset=420;
+					break;
+				case 420:
+					$leftOffset=30;
+					$topOffset=$topOffset+75;
+			}
+        	$codigos++;
+		}
+		// and the end render your Zend_Pdf 
+		if ($codigos != 34){
+			$pdfWithBarcode->save("codigos_PA3_{$pagina}.pdf");
+			print "<a href='/codigos_PA3_{$pagina}.pdf'> pagina{$pagina}..ok</a><br>"; 
+		}
+		
+	}
 	public function precosAction(){
 		$model = new Application_Model_Produtos();
-		$this->view->produtos = $model->getPrecos();
+		$this->view->produtos = $model->getPrecos();				
 	}
 }
 

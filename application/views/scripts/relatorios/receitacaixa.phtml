@@ -54,6 +54,9 @@ $(function () {
 			}
 		}, 1200);
 <?php }?>
+var helpdesk = document.getElementById("helpdesk");
+	helpdesk.style.display =  "none";
+	
 	soma_qtd();
 	$("#pgdinheiro").keyup(function () {
 		var novo_valor=$("#pgdinheiro").val().replace(/,/,".");

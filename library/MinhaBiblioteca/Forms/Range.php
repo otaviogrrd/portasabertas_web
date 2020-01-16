@@ -6,6 +6,8 @@ class MinhaBiblioteca_Forms_Range extends Zend_Form {
         $this->setMethod('post');
 
         $inicio = $this->createElement('text', 'prefixo', array('label' => 'Prefixo:', 'class' => 'input-m','disabled'=>'disabled'));
+		//$inicio = $this->createElement('text', 'prefixo', array('label' => 'Prefixo:', 'class' => 'input-m'));
+		//$inicio ->setAttrib('maxlength','4');
         $digitos = $this->createElement('text', 'digitos', array('label' => 'Digitos:', 'class' => 'input-m','disabled'=>'disabled','value'=> "8"));
         $qtd = $this->createElement('text', 'qtd', array('label' => 'Quantidade:', 'class' => 'input-m'))->setRequired(true);
         $this->addElement($inicio);

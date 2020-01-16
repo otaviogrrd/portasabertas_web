@@ -26,7 +26,7 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
     	   echo '<a href="'
               . $this->url(
                     array(
-                        'action'=>($key['aceita_pagamento'])?"meus-produtos-pagamento":"meusprodutos",
+                        'action'=>(($key['aceita_negativo'])?"meus-produtos-negativo":(($key['aceita_pagamento'])?"meus-produtos-pagamento":"meusprodutos")),
                         'controller'=>'Produtos',
                         'id_barracas'=>$key['id_barraca']
                     ),

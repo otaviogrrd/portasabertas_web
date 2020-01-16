@@ -2,37 +2,22 @@
 $auth = Zend_Auth::getInstance ();
 $login = $auth->getIdentity();
 $permissoes=array(1,2,4);
-if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){?>
-
-<?php 
-$this->headScript()
-	->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
-	->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript')
-	->appendFile($this->baseUrl() . '/js/zxing.js','text/javascript');
+if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
+	$this->headScript()
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript')
+		->appendFile($this->baseUrl() . '/js/zxing.js','text/javascript');
+		
+	$this->headLink()
+		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
 	
-$this->headLink()
-	->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
-
-	
-$this->headScript()->captureStart();
-?>
- <style type="text/css" media="screen">
-     .cartaoDenario{
-        background-color: green;
-     }
-     .cartaoChurrasco{
-        background-color: #eca1a1;
-	 }
- </style>
- <div class="tituloPag">Cartões</div>
-
-
+		
+	$this->headScript()->captureStart();?>
+	 <div class="tituloPag">Transferir Crédito</div>
 <br>
 <br>
-
-<form id="myForm" action="<?php $this->url(array("controller"=>"cartao","action"=>"index")) ?>" method="get">
-<h2>Informe número do cartão, documento ou nome do portador:</h2>
-
+	<h1>Transferir Crédito</h1>
+	
 <img height=40 align="middle" src='/img/open_scan.JPG' id="barcode_button1" onclick="showScanner()"></img>
 <img height=40 align="middle" src='/img/close_scan.JPG' id="barcode_button2" onclick="stopScanning()"></img>
 <br/>
@@ -44,10 +29,95 @@ $this->headScript()->captureStart();
     <canvas id="pcCanvas" width="640" height="480" style="display: none; float: bottom;"></canvas>
     <canvas id="mobileCanvas" width="240" height="320" style="display: none; float: bottom;"></canvas>
   </div>
-<input class="buscar" id="busca" type="text" name="busca" autocomplete="off"> 
 
-<script>	
-				
+	<script>
+	var saldo = 0;
+	baseUrl = "<?php echo $this->baseUrl(); ?>";
+	$(function () {
+		var codigo_atual="";
+		$("#id_cartao2").focus();
+		//$("#id_estorno").attr('required', 'required').attr('aria-required', 'true');
+		//$("#id_forma").attr('required', 'required').attr('aria-required', 'true');
+		$("#creditos").val('R$ ' + parseFloat($("#creditos").val()).toFixed(2));
+		$("#valor").keyup(function(){
+			var novo_valor=$("#valor").val().replace(/,/,".");
+			novo_valor= novo_valor.replace(/(-|'|"|`|´|;)/,"");
+			$("#valor").val(novo_valor);
+			//$("#valor").val().replace(novo_valor);
+			if (parseFloat(novo_valor)){
+				$("#saldo_futuro").val('R$ ' + parseFloat(parseFloat(saldo) + parseFloat(novo_valor)).toFixed(2));
+				$("#confirmar").attr("disabled",false);
+				}
+			else{
+				$("#confirmar").attr("disabled",true);
+				$("#saldo_futuro").val(" ");
+				}
+			});
+		setInterval(function() {
+			//verifica se o leitor substituiu o codigo sem mudar de campo(ipad)
+			if($("#id_cartao2").val() != codigo_atual){
+				codigo_atual= $("#id_cartao2").val();
+				$("#id_cartao2").trigger('change');
+				//$('#alerta').html("<h3>&nbsp;</h3>");
+				}
+			if($("#id_cartao2").val() != "" && parseFloat($("#valor").val().replace(/R../,"")) > 0){
+				$("#submit").attr("disabled",false);
+				}
+			else{
+				$("#submit").attr("disabled",true);
+				}
+			}, 1200);
+		$("#id_cartao2").change(function () {
+			var id = $(this).val().replace(/\D/g,"");
+			$('#descricao2').val(" ");
+			$('#saldo_futuro').val(" ");
+			$("#submit").attr("disabled",false);
+			if (id.length > 7){
+			  if (id.length > 8)
+			  	id = id.substr(id.length - 9,8);
+			  $("#id_cartao2").val(id);
+			  $.ajax({
+				url: baseUrl + '/cartao/portador/id/' + id,
+				dataType: 'json',
+				async    : false,
+			  	success: function(data) {
+				  	$('#descricao2').val(data[0].descricao);
+				  	//$('#saldo_futuro').val(data[0].creditos);
+					saldo = parseFloat(data[0].creditos).toFixed(2);
+					$("#saldo").val('R$ ' + parseFloat(data[0].creditos).toFixed(2));
+					$("#saldo_futuro").val('R$ ' + parseFloat(data[0].creditos).toFixed(2));
+			    	//$('span#creditos').html(parseFloat(data[0].creditos).toFixed(2));
+			    	//$(".item").find('input').val('');
+			    	//alert('Load was performed.');
+					}
+				});
+			}
+			else{
+				$('#descricao2').val(" ");
+				$("#saldo").val(" ");
+				$("#submit").attr("disabled",false);
+				}
+		});
+		$("form").submit(function () {
+			var	retorno = false;
+			
+			$("#submit").attr("disabled",false);
+			retorno= confirma_mesclar($("#id_cartao").val(),$("#valor").val(),$("#id_cartao2").val());
+			
+			if (retorno===false)
+				$("#submit").attr("disabled",retorno);
+			//return false;
+			return retorno;
+		});
+		});
+	</script>
+	<div ><?php echo $this->mensagem  ?></div>
+	<table style="width: 950px">
+	</table>
+	<?php echo $this->form;
+}?>
+
+	<script>			
 var button1 = document.getElementById("barcode_button1");
 var button2 = document.getElementById("barcode_button2");
 var select = document.getElementById("select");
@@ -60,7 +130,7 @@ var mobileCanvas = document.getElementById('mobileCanvas');
 var ctx = canvas.getContext('2d');
 var mobileCtx = mobileCanvas.getContext('2d');
 var videoSelect = document.querySelector('select#videoSource');
-var barcode_result = document.getElementById('busca');
+var barcode_result = document.getElementById('id_cartao2');
 
 var isScanning = false;
 var videoWidth = 640;
@@ -85,8 +155,8 @@ var decodeCallback = function (ptr, len, resultIndex, resultCount) {
   var result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
   console.log(String.fromCharCode.apply(null, result));
   console.log(barcode_result);
-  barcode_result.value = String.fromCharCode.apply(null, result);  
-  document.getElementById("myForm").submit();
+  barcode_result.value = String.fromCharCode.apply(null, result);
+  stopScanning();
 };
 
 // check devices
@@ -150,7 +220,7 @@ function scanBarcode() {
 
   var data = null,
     context = null,
-    width = 640,
+    width = 640, 
     height = 480,
     dbrCanvas = null;
 
@@ -278,107 +348,4 @@ function gotStream(stream) {
 function handleError(error) {
   console.log('Erro: ', error);
 }
-$(function () {
-    $("#busca").focus();
-});
 </script>
-
-<input class="input-pp" type="submit" value="Buscar">
-<div class='cartaoDenario'><h2 style='color:black'> Os cartões com crédito em denário, aparecem destacados em cor verde, como esse texto.</h2></div>
- 
-
-</form>
- 
-<div class="clearfix"><?php echo $this->mensagem  ?>
-<?php 
-if (isset($_SESSION['ALERTA']) && is_array($_SESSION['ALERTA']))
-	foreach ($_SESSION['ALERTA'] as $alerta){
-		echo "<h3>{$alerta}</h3><br>";
-	}
-	unset($_SESSION['ALERTA']);
-?></div>
-<div id="conteudo_tabela" class="#conteudo_centro">
-<br>
-
- <?php
-
-    if(isset($this->paginator) && count($this->paginator) > 0){
-    
-    ?>
-<table style="width: 950px">
-    <thead>
-        <tr>
-            <th class="rounded-company" style="width: 100px">Número</th>
-            <?php if(isset($_REQUEST['busca']) && $_REQUEST['busca']){?>
-            <th class="rounded-company" style="width: 100px">Saldo</th>
-            <?php }?>
-            <th class="rounded-company" style="width: 150px">Portador</th>
-            <th class="rounded-company" style="width: 150px">Documento</th>
-            <th class="rounded-company" style="width: 100px">Situação</th>
-            <th class="rounded-company" style="width: 300px">Ações</th>
-            <th class="rounded-company" style="width: 200px">Relatórios</th>
-        </tr>
-    </thead>
-    <tbody>
-   
-        <?php
-		$status=array(0=>'Disponivel', 1 => 'Em uso',2 => 'Desativado');
-        foreach($this->paginator as $key): ?>
-
-        <tr class='<?php echo ( $key['tp_cartao'] == 1 && $key['creditos'] < 0 )? 'cartaoChurrasco' : (($key['tem_denario'])?'cartaoDenario':'');?>'>
-            <td class="listar-simples"><?php echo $key['id_cartao']?></td>
-            <?php if(isset($_REQUEST['busca']) && $_REQUEST['busca']){?>
-            <td class="listar-simples">R$ <?php printf("%.2f",$key['creditos']); ?></td>
-            <?php }?>
-            <td class="listar-simples"><?php echo $key['descricao']; ?></td>
-            <td class="listar-simples"><?php echo $key['documento']; ?></td>
-            <td class="listar-simples"><?php echo $status[$key['status']]; ?></td>
-        <td class="listar-simples">
-        	<?php if ($key['status'] ==1) {
-        			#cartao ativo e em uso /relatorios/transacoes?filtro=12345678
-        		 	echo '<a href="' . $this->url(array('action'=>'inserircredito','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1).'">Inserir  </a>';
-					if( $key['creditos'] > 0 ){
-						echo '<a href="' . $this->url(array('action'=>'estorno','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'"> | Estornar</a>';
-						echo '<br/><a href="' . $this->url(array('action'=>'mesclar','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">  Transferir  </a>';
-					}    
-					if( $key['creditos'] >= 0 ){
-						echo '<a href="' . $this->url(array('action'=>'desativar','controller'=>'Cartao','id_cartao'=>$key['id_cartao'],'s'=>$key['creditos']),null,1).'" onclick="return confirma_desativar(\''.$key['id_cartao'].'\',\''.$key['descricao'].'\',\''.$key['creditos'].'\');">  |  Desativar  </a>';
-						echo '<br/><a href="' . $this->url(array('action'=>'substituir','controller'=>'Cartao','id_cartao'=>$key['id_cartao']),null,1) .'">Substituir</a>';
-					}
- 	       		  }            	 
-            ?>
-            </td>
-        <td class="listar-simples">
-        	<?php if ($key['status'] > 0) {
-        			#cartao em uso ou desativado /relatorios/transacoes?filtro=12345678
-        		 	echo '<a href="' . $this->url(array('action'=>'transacoesbarraca','controller'=>'relatorios','filtro'=>$key['id_cartao']),null,1).'">Vendas | </a>';
-        		 	echo '<a href="' . $this->url(array('action'=>'receita','controller'=>'relatorios','filtro'=>$key['id_cartao']),null,1).'">Créditos</a>';
-        			}            	 
-            ?>
-            </td>
-
-        </tr>
-        <?php endforeach; ?>
-       
-       
-       
-    
-    </tbody>
-  
-</table>
-<?php }
-else {
-	if (isset($this->paginationControl)){
-		echo "<h1>Registro não encontrado</h1>";
-		}	
-}
-   ?>
-<br>
-
- <?php
-if (isset($this->paginationControl)){
-	echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
-	}
-?>
-</div>
-<?php }?>

@@ -46,6 +46,18 @@ echo $this->headLink();
 		else	
 			return false;
 	}
+ function confirma_mesclar(a,b,c){
+		if(confirm("Confirma transferir R$ "+ parseFloat(b).toFixed(2) +" do cartão "+ a +"\n para o cartão "+ c +"?\n\n" ))
+			return true;
+		else	
+			return false;
+	}
+ function confirma_substituir(a,b){
+		if(confirm("Confirma gerar outro cartão para: \n"+ a +" \nSaldo: "+ b +"?\n\n" )) 
+			return true;
+		else	
+			return false;
+	}
 function confirma_doacao(a,b,c,d){
 		if(confirm("Confirma a doação ?\n\n"))
 			return true;

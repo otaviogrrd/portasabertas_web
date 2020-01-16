@@ -6,7 +6,7 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 	$this->headScript()
 		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-1.5.1.min.js','text/javascript')
 		->appendFile($this->baseUrl() . '/js/jquery/js/jquery-ui-1.8.14.custom.min.js','text/javascript')
-		->appendFile($this->baseUrl() . '/js/scandit.js','text/javascript');
+		->appendFile($this->baseUrl() . '/js/zxing.js','text/javascript');
 		
 	$this->headLink()
 		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
@@ -18,14 +18,22 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 <br>
 <br>
 
-<button type="button" onclick="showScanner()">  
-<svg xmlns="http://www.w3.org/2000/svg" width="60" height="40" viewBox="0 0 127 127"><g fill="none" fill-rule="evenodd"><g class="base" fill="#000000"><g transform="translate(16 70)"><polygon points="26 37 43 37 43 0 26 0"/><polygon points="85 37 94 37 94 0 85 0"/><polygon points="0 37 9 37 9 0 0 0"/><polygon points="11 37 20 37 20 0 11 0"/><polygon points="74 37 83 37 83 0 74 0"/><polygon points="63 37 72 37 72 0 63 0"/><polygon points="46 37 55 37 55 0 46 0"/></g><g transform="translate(16 20)"><polygon points="26 37 43 37 43 0 26 0"/><polygon points="85 37 94 37 94 0 85 0"/><polygon points="0 37 9 37 9 0 0 0"/><polygon points="11 37 20 37 20 0 11 0"/><polygon points="74 37 83 37 83 0 74 0"/><polygon points="63 37 72 37 72 0 63 0"/><polygon points="46 37 55 37 55 0 46 0"/></g><g fill-rule="nonzero"><polygon points="126 0 94 0 94 3.693 122.307 3.693 122.307 32 126 32"/><polygon points="3.693 3.693 32 3.693 32 0 0 0 0 32 3.693 32"/><polygon points="122.307 123.307 94 123.307 94 127 126 127 126 95 122.307 95"/><polygon points="0 127 32 127 32 123.307 3.693 123.307 3.693 95 0 95"/></g></g><polygon class="scanline" fill="#2EC1CE" fill-rule="nonzero" points="0 62 0 65 127 65 127 62"/></g></svg>
-</button>
-<div id="scandit-barcode-picker"></div>
-
+<img height=40 align="middle" src='/img/open_scan.JPG' id="barcode_button1" onclick="showScanner()"></img>
+<img height=40 align="middle" src='/img/close_scan.JPG' id="barcode_button2" onclick="stopScanning()"></img>
+<br/>
+  <div id="select" class="select">
+    <label for="videoSource">Câmera: </label><select id="videoSource"></select>
+	<br/>
+    <video muted autoplay id="video" playsinline="true"></video>
+	<br/>
+    <canvas id="pcCanvas" width="640" height="480" style="display: none; float: bottom;"></canvas>
+    <canvas id="mobileCanvas" width="240" height="320" style="display: none; float: bottom;"></canvas>
+  </div>
+  
 	<h1>Associar Cartão</h1>
 	<script>
 	baseUrl = "<?php echo $this->baseUrl(); ?>";
+
 	$(function () {
 		var codigo_atual="";
 		$("#id_cartao").focus();
@@ -35,7 +43,9 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 				codigo_atual= $("#id_cartao").val();
 				$("#id_cartao").trigger('change');
 				//$('#alerta').html("<h3>&nbsp;</h3>");
-				}
+				}			
+				
+				
 			//Altera o id do status por nome
 			if($("#situacao").val() == "0"){
 				$("#situacao").val("Disponível")
@@ -46,11 +56,24 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 			if($("#situacao").val() == "2"){
 				$("#situacao").val("Desativado")
 				}
-			if($("#situacao").val() == "Disponível" && $("#descricao").val() != 'DISPONIVEL' && $("#descricao").val().match(/\S+\s\S+/)){
+			if($("#situacao").val() == "Disponível" && $("#descricao").val() != 'DISPONIVEL' && $("#descricao").val() != '' && $("#sobrenome").val() != '' ){
 				$("#submit").attr("disabled",false);
 				}
 			else{
-				$("#submit").attr("disabled",true);
+				$("#submit").attr("disabled",true);				
+				}
+				
+				if ($("#id_cartao").val() != ''){
+					if ($("#descricao").val() === 'DISPONIVEL' || $("#descricao").val() === '')
+						$('#descricao').css({'background-color': 'lightcoral'});
+					else 
+						$('#descricao').css({'background-color': ''});
+						
+									
+					if ($("#sobrenome").val() === '')
+						$('#sobrenome').css({'background-color': 'lightcoral'});
+					else
+						$('#sobrenome').css({'background-color': ''});			
 				}
 			}, 1200);
 		$("#descricao").keyup(function () {
@@ -109,48 +132,236 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 	</table>
 	<?php echo $this->form; 
 	}?>
-	<script>			
-			
-// Configure the library and activate it with a license key
-const licenseKey = "AQe9jBn7BGJdQp37IRMc7htFawpGLLavtGjOzAFkdMoBZKL2l0512jhCrgFjbaqja00wK3ZN7LyLaqetvE5vBjlMpRapIzuGHXTusJBeptqlVrk0VAsapH9l7o2TX6Wp2y9Xudltd78qPZMRVDhE6NMEEzPLvIvTvKf0S2EGJUgPEWPUloAYAjyc5e7HtZ0O/f9sdB+ms2u2cLjk7IfSsQbDfNSBcJD4gyDMWpHDL7JJm0pdvn8RTf6n5mtZYJXdQYZnmuazsPBWRGJ8YOwS9QmoiOlYMZyC1p7fnyZWyPgk7dksSLOpe4A12GOx/o2wr5/j9Wjbxyzva3/rKUoEnVyh5FXPax7aK1CI165B3KoABLD/AjPtLfXBG0JXmwjEx7FEbICljNVTJPDgqq/BXa3iT/gqwSeDK9/uWisKhcGTfwiFt6Z5zwpz1Tz5r1L6fQfLsR1v/EJeZr0E5KBDxQyFYYQzJYutwEVZqpLnY1OqyfQqJCq3OdbayrjP0IWUP5r2E7rNny6A9heIxkLBUumzBGlFsO3La8+iYplI7+rdHYY3yG3Zp5XWccf2C1NACSAnZQ4KgUaOooxatOYwsXkfHeJeMYaw4+khfHQLOZlvKsa7FcLhQg6H+VlXINaumhOzoFpojrBUt1CkJCscUQFtx/COF4BeZXaM8pAlwa4SSma1ltkactaTnL36OlF0A9yV6h/ve59l6XE04Ks1xhxIfoFZOhzvaa9FdBY5Pxjli6Sx+TEkmZBY4mbQ4QVXm0Ea53YM1oiPHhbnRmIJFkFnFo96Wf46FtBLWMddddRBClPMhF3tS/dJ+xuZ8s8K7sgukhI=";
-// Configure the engine location, as explained on http://docs.scandit.com/stable/web/index.html
-const engineLocation = "https://cdn.jsdelivr.net/npm/scandit-sdk@4.x/build"
-const scannerContainer = document.getElementById("scandit-barcode-picker");
-scannerContainer.style.visibility =  "hidden";
-scannerContainer.style.height =  "0";
-let picker;	
+	<script>		
+var button1 = document.getElementById("barcode_button1");
+var button2 = document.getElementById("barcode_button2");
+var select = document.getElementById("select");
+	button2.style.display =  "none";
+	select.style.display =  "none";
+	
+var videoElement = document.querySelector('video');
+var canvas = document.getElementById('pcCanvas');
+var mobileCanvas = document.getElementById('mobileCanvas');
+var ctx = canvas.getContext('2d');
+var mobileCtx = mobileCanvas.getContext('2d');
+var videoSelect = document.querySelector('select#videoSource');
+var barcode_result = document.getElementById('id_cartao');
 
-const scanInput = document.getElementById("id_cartao");
-// Create & start the picker
-ScanditSDK.configure(licenseKey, { engineLocation: engineLocation });
-ScanditSDK.BarcodePicker.create(scannerContainer)
-	.then(barcodePicker => {
-		picker = barcodePicker;
-			// Create the settings object to be applied to the scanner
-			const scanSettings = new ScanditSDK.ScanSettings({
-				enabledSymbologies: ["upca"]
-			});
-			picker.applyScanSettings(scanSettings);
-			picker.on("scan", scanResult => {
-				stopScanning();
-				scanInput.value = scanResult.barcodes[0].data.substring(4, 12);
-			});
-			picker.on("scanError", error => alert(error.message));
-			picker.resumeScanning();
-		})
-		.catch(alert);
-		
-function showScanner() {	
-		scannerContainer.style.visibility =  "visible";
-		scannerContainer.style.height =  "initial";
-		picker.resumeScanning();
+var isScanning = false;
+var videoWidth = 640;
+var videoHeight = 480;
+var mobileVideoWidth = 240, mobileVideoHeight = 320;
+var isPC = true;
+
+var ZXing = null;
+var decodePtr = null;
+
+var tick = function () {
+  if (window.ZXing) {
+    ZXing = ZXing();
+    decodePtr = ZXing.Runtime.addFunction(decodeCallback);
+  } else {
+    setTimeout(tick, 10);
+  }
+};
+tick();
+
+var decodeCallback = function (ptr, len, resultIndex, resultCount) {
+  var result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
+  console.log(String.fromCharCode.apply(null, result));
+  console.log(barcode_result);
+  barcode_result.value = String.fromCharCode.apply(null, result);
+  stopScanning();
+};
+
+// check devices
+function browserRedirect() {
+  var deviceType;
+  var sUserAgent = navigator.userAgent.toLowerCase();
+  var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+  var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+  var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+  var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+  var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+  var bIsAndroid = sUserAgent.match(/android/i) == "android";
+  var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+  var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+  if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+    deviceType = 'phone';
+  } else {
+    deviceType = 'pc';
+  }
+  return deviceType;
 }
-function stopScanning() {
-	if (picker) {
-		picker.pauseScanning();
-		scannerContainer.style.visibility =  "hidden";
-		scannerContainer.style.height =  "0";
+
+if (browserRedirect() == 'pc') {
+  isPC = true;
+} else {
+  isPC = false;
+}
+
+// stackoverflow: http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata/5100158
+function dataURItoBlob(dataURI) {
+  // convert base64/URLEncoded data component to raw binary data held in a string
+  var byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+    byteString = atob(dataURI.split(',')[1]);
+  else
+    byteString = unescape(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to a typed array
+  var ia = new Uint8Array(byteString.length);
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  return new Blob([ia], {
+    type: mimeString
+  });
+}
+
+
+// scan barcode
+function scanBarcode() {
+  barcode_result.textContent = "";
+
+  if (ZXing == null) {
+    alert("Erro ao iniciar Leitor!");
+    return;
+  }
+
+  var data = null,
+    context = null,
+     width = 640, 
+ height = 480,
+    dbrCanvas = null;
+
+  if (isPC) {
+    context = ctx;
+    width = videoWidth;
+    height = videoHeight;
+    dbrCanvas = canvas;
+  } else {
+    context = mobileCtx;
+    width = mobileVideoWidth;
+    height = mobileVideoHeight;
+    dbrCanvas = mobileCanvas;
+  }
+
+  context.drawImage(videoElement, 0, 0, width, height);
+
+  var vid = document.getElementById("video");
+  //console.log("video width: " + vid.videoWidth + ", height: " + vid.videoHeight);
+  var barcodeCanvas = document.createElement("canvas");
+  barcodeCanvas.width = vid.videoWidth;
+  barcodeCanvas.height = vid.videoHeight;
+  var barcodeContext = barcodeCanvas.getContext('2d');
+  var imageWidth = vid.videoWidth, imageHeight = vid.videoHeight;
+  barcodeContext.drawImage(videoElement, 0, 0, imageWidth, imageHeight);
+  if (vid.videoWidth == 0){
+	  if (isScanning){
+		setTimeout(scanBarcode, 100);
+		return;
+	  }
+  }
+  // read barcode
+  var imageData = barcodeContext.getImageData(0, 0, imageWidth, imageHeight);
+  var idd = imageData.data;
+  var image = ZXing._resize(imageWidth, imageHeight);
+  console.time("decode barcode");
+  for (var i = 0, j = 0; i < idd.length; i += 4, j++) {
+    ZXing.HEAPU8[image + j] = idd[i];
+  }
+  var err = ZXing._decode_any(decodePtr);
+  console.timeEnd('decode barcode');
+  console.log("error code", err);
+  if (err == -2) {
+	  if (isScanning){
+		setTimeout(scanBarcode, 100);
+	  }
+  }
+}
+// https://github.com/samdutton/simpl/tree/gh-pages/getusermedia/sources 
+var videoSelect = document.querySelector('select#videoSource');
+
+function showScanner() {	
+	button2.style.display =  "block";
+	select.style.display =  "block";
+	button1.style.display =  "none";
+	
+	navigator.mediaDevices.enumerateDevices()
+		.then(gotDevices).then(getStream).catch(handleError);  
+  
+  setTimeout(function(){	  
+  
+	  if (isPC) {
+		canvas.style.display = 'none';
+	  } else {
+		mobileCanvas.style.display = 'none';
+	  }
+	  isScanning = true;
+	  scanBarcode();
+	}, 1000);
+}
+
+videoSelect.onchange = getStream;
+
+function gotDevices(deviceInfos) {
+  while (videoSelect.firstChild) {
+    videoSelect.removeChild(videoSelect.firstChild);
+  }
+  for (var i = deviceInfos.length - 1; i >= 0; --i) {
+    var deviceInfo = deviceInfos[i];
+    var option = document.createElement('option');
+    option.value = deviceInfo.deviceId;
+    if (deviceInfo.kind === 'videoinput') {
+      option.text = deviceInfo.label || 'camera ' +
+        (videoSelect.length + 1);
+      videoSelect.appendChild(option);
+    } else {455
+      //console.log('Found one other kind of source/device: ', deviceInfo);
+    }
+  }
+}
+function stopScanning() {	
+	button1.style.display =  "block";
+	button2.style.display =  "none";
+	select.style.display =  "none";
+	isScanning = false;
+	if (window.stream) {
+		window.stream.getTracks().forEach(function(track) {
+		  track.stop();
+		});
 	}
+}
+
+function getStream() {
+  if (window.stream) {
+    window.stream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+  }
+
+  var constraints = {
+    video: {
+      deviceId: {exact: videoSelect.value}
+    }
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints).
+    then(gotStream).catch(handleError);
+}
+
+function gotStream(stream) {
+  window.stream = stream; // make stream available to console
+  videoElement.srcObject = stream;
+}
+
+function handleError(error) {
+  console.log('Erro: ', error);
 }
 </script>
 

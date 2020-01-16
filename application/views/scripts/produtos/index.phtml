@@ -32,6 +32,7 @@ echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
             <th class="rounded-company" style="width: 100px">Estoque</th>
             <th class="rounded-company" style="width: 100px">Custo</th>
             <th class="rounded-company" style="width: 120px">Valor</th>
+            <th class="rounded-company" style="width: 50px" >Ordem</th>
             <th class="rounded-company" style="width: 200px">Ações</th>
         </tr>
     
@@ -44,6 +45,7 @@ echo $this->paginationControl($this->paginator, 'all', 'paginator_item.phtml');
             <td class="listar-simples"><?php echo $key['estoque']; ?></td>
             <td class="listar-simples"><?php echo "R$ ";printf("%.2f",$key['custo']); ?></td>
             <td class="listar-simples"><?php echo "R$ ";printf("%.2f",$key['valor']); ?></td>
+            <td class="listar-simples"><?php echo $key['ordem']; ?></td>
             <td class="listar-simples"><a href="<?php echo $this->url(array('action'=>'edit','controller'=>'Produtos','id_produtos'=>$key['id_produtos']),null,1); ?>">Editar</a>
              | <a href="<?php echo $this->url(array('action'=>'delete','controller'=>'Produtos','id_produtos'=>$key['id_produtos']),null,1); ?>">Deletar</a> </td>
             
