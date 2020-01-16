@@ -16,12 +16,13 @@ if($auth->hasIdentity() && in_array($login->nivel,$permissoes)){
 		->appendStylesheet($this->baseUrl() . '/js/jquery/css/custom-theme/jquery-ui-1.8.14.custom.css');
 	
 		
-	$this->headScript()->captureStart(); ?>
-	baseUrl = "<?php echo $this->baseUrl(); ?>";
-	var max = <?php echo $max ?>;
-<?php $this->headScript()->captureEnd() ?>
+     $this->headScript()->captureStart(); ?>
+     baseUrl = "<?php echo $this->baseUrl(); ?>";
+     var max = <?php echo $max ?>;
+	
+ <?php $this->headScript()->captureEnd() ?>
 
-<script>
+<script> 
 var tp_cartao = 0;
 var status = 0;
 
@@ -188,8 +189,8 @@ function soma_qtd(){
 	});
 }
 
-</script>
-<?php #$this->headScript()->captureEnd() ?>
+</script> 
+
  
  <div class="tituloPag"><?php echo $this->nome;?></div>
 
